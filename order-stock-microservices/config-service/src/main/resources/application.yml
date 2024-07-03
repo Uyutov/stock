@@ -1,0 +1,13 @@
+server:
+  port: 7777
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Uyutov/innowise
+          username: Uyutov
+          password: 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
+          search-paths: task3/config-repo
