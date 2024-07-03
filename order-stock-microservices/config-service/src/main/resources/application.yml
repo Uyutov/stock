@@ -10,4 +10,4 @@ spring:
           uri: https://github.com/Uyutov/innowise
           username: Uyutov
           password: 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
-          search-paths: task3/config-repo
+          search-paths: order-stock-microservices/config-repo
