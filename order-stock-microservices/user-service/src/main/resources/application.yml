@@ -6,3 +6,10 @@ eureka:
   client:
     service-url:
       defaultZone : http://localhost:8761/eureka/
+
+keycloak:
+  serverUrl: "http://localhost:9090"
+  realm: "innowise"
+  adminClientId: "admin-cli"
+  authClientId: "innowise-task3-auth"
+  adminClientSecret: "aLKwUqiRqcHUvfPK5spAC9FqkrXB5B5J"

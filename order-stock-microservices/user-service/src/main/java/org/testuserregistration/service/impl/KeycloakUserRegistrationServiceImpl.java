@@ -10,6 +10,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,6 +20,7 @@ import org.testuserregistration.config.security.KeycloakConfig;
 import org.testuserregistration.dto.LoginDTO;
 import org.testuserregistration.dto.RefreshTokenDTO;
 import org.testuserregistration.dto.UserRegistrationDTO;
+import org.testuserregistration.mapper.KeycloakUserMapper;
 import org.testuserregistration.service.KeycloakUserRegistrationService;
 
 import java.util.Arrays;
@@ -27,22 +29,17 @@ import java.util.Objects;
 
 @Service
 public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistrationService {
-    private Keycloak adminKeycloak;
+    @Value("${keycloak.authClientId}")
+    private String authClientId;
+    private final Keycloak adminKeycloak;
 
     public KeycloakUserRegistrationServiceImpl(Keycloak adminKeycloak) {
         this.adminKeycloak = adminKeycloak;
     }
 
     @Override
-    public UserRegistrationDTO createUser(UserRegistrationDTO userDTO) {
-        UserRepresentation user = new UserRepresentation();
-        user.setEnabled(true);
-        user.setUsername(userDTO.username());
-        user.setEmail(userDTO.email());
-        user.setFirstName(userDTO.firstName());
-        user.setLastName(userDTO.lastName());
-        user.setEmailVerified(true);
-        user.setGroups(List.of("user"));
+    public ResponseEntity createUser(UserRegistrationDTO userDTO) {
+        UserRepresentation user = KeycloakUserMapper.mapUser(userDTO);
 
         CredentialRepresentation credentials = new CredentialRepresentation();
         credentials.setValue(userDTO.password());
@@ -55,13 +52,11 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
         UsersResource usersResource = realm.users();
 
         Response response = usersResource.create(user);
-
         if(response.getStatus() == 201)
         {
-            return userDTO;
+            return ResponseEntity.status(201).body("User successfully registered");
         }
-
-        return null;
+        return ResponseEntity.status(409).body("Failed to register");
     }
 
     @Override
@@ -74,7 +69,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
         map.add("grant_type", "password");
-        map.add("client_id", "innowise-task3-auth");
+        map.add("client_id", authClientId);
         map.add("username", loginDTO.username());
         map.add("password", loginDTO.password());
 
@@ -100,7 +95,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
         map.add("grant_type", "refresh_token");
-        map.add("client_id", "innowise-task3-auth");
+        map.add("client_id", authClientId);
         map.add("refresh_token", refreshTokenDTO.refreshToken());
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
