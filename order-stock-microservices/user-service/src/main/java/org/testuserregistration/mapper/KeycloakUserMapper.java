@@ -1,12 +1,14 @@
 package org.testuserregistration.mapper;
 
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.stereotype.Component;
 import org.testuserregistration.dto.UserRegistrationDTO;
 
 import java.util.List;
 
+@Component
 public class KeycloakUserMapper{
-    public static UserRepresentation mapUser(UserRegistrationDTO userDTO)
+    public UserRepresentation mapUser(UserRegistrationDTO userDTO)
     {
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);

@@ -1,9 +1,11 @@
 package org.testuserregistration.controller;
 
-import jakarta.ws.rs.core.Response;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.testuserregistration.dto.LoginDTO;
 import org.testuserregistration.dto.RefreshTokenDTO;
 import org.testuserregistration.dto.UserRegistrationDTO;
@@ -23,11 +25,13 @@ public class UserController {
     {
         return keycloakUserRegistrationService.createUser(userDTO);
     }
+
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login (@RequestBody LoginDTO loginDTO)
     {
         return keycloakUserRegistrationService.loginUser(loginDTO);
     }
+
     @PostMapping("/refresh")
     public ResponseEntity<AccessTokenResponse> refreshToken (@RequestBody RefreshTokenDTO refreshTokenDTO)
     {
