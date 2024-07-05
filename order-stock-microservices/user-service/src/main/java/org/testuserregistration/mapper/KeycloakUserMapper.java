@@ -7,9 +7,8 @@ import org.testuserregistration.dto.UserRegistrationDTO;
 import java.util.List;
 
 @Component
-public class KeycloakUserMapper{
-    public UserRepresentation mapUser(UserRegistrationDTO userDTO)
-    {
+public class KeycloakUserMapper {
+    public UserRepresentation mapUser(UserRegistrationDTO userDTO) {
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
         user.setUsername(userDTO.username());

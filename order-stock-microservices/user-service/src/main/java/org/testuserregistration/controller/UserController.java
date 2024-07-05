@@ -21,20 +21,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity createUser (@RequestBody UserRegistrationDTO userDTO)
-    {
+    public ResponseEntity createUser(@RequestBody UserRegistrationDTO userDTO) {
         return keycloakUserRegistrationService.createUser(userDTO);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AccessTokenResponse> login (@RequestBody LoginDTO loginDTO)
-    {
+    public ResponseEntity<AccessTokenResponse> login(@RequestBody LoginDTO loginDTO) {
         return keycloakUserRegistrationService.loginUser(loginDTO);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenResponse> refreshToken (@RequestBody RefreshTokenDTO refreshTokenDTO)
-    {
+    public ResponseEntity<AccessTokenResponse> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
         return keycloakUserRegistrationService.refreshToken(refreshTokenDTO);
     }
 }

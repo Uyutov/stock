@@ -29,6 +29,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
     private final String SUCCESSFUL_USER_REGISTRATION = "User successfully registered";
     private final String FAILED_USER_REGISTRATION = "User successfully registered";
     private final String TOKEN_URL = "http://localhost:9090/realms/innowise/protocol/openid-connect/token";
+
     public KeycloakUserRegistrationServiceImpl(Keycloak adminKeycloak, KeycloakUserMapper keycloakUserMapper) {
         this.adminKeycloak = adminKeycloak;
         this.keycloakUserMapper = keycloakUserMapper;
@@ -49,8 +50,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
         UsersResource usersResource = realm.users();
 
         Response response = usersResource.create(user);
-        if(response.getStatus() == 201)
-        {
+        if (response.getStatus() == 201) {
             return ResponseEntity.status(201).body(SUCCESSFUL_USER_REGISTRATION);
         }
         return ResponseEntity.status(response.getStatus()).body(FAILED_USER_REGISTRATION);
