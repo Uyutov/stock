@@ -25,7 +25,7 @@ spring:
             - Path=/inventory/**
 
 server:
-  port: 8002
+  port: 8001
 
 eureka:
   client:

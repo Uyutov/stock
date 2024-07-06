@@ -1,1 +1,3 @@
 .idea
+*.pgerd
+postgres_script_sql.txt

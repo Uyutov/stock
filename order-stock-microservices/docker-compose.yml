@@ -3,18 +3,16 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - 5432:5432
+      - 8844:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak_db
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
-    networks:
-      - keycloak_network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:22.0.4
+    image: quay.io/keycloak/keycloak:25.0.0
     command: start-dev
     restart: always
     links:
@@ -36,13 +34,7 @@ services:
       KC_DB_SCHEMA: public
     depends_on:
       - postgres
-    networks:
-      - keycloak_network
 
 volumes:
   postgres_data:
     driver: local
-
-networks:
-  keycloak_network:
-    driver: bridge
