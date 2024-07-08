@@ -1,9 +1,8 @@
 package org.orderservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
@@ -13,9 +12,12 @@ import java.util.List;
 @Table(name = "product", schema = "order_stock")
 public class Product {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
+    @NotBlank(message = "Please provide product name")
     private String name;
+    @Min(value = 0, message = "Price should be positive")
     private Integer price;
 
     @OneToMany(mappedBy = "product")
