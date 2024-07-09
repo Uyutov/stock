@@ -11,7 +11,8 @@ import lombok.Data;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
-    private String id;
+    @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq", allocationSize = 1)
+    private Long id;
 
     @NotBlank(message = "Please provide product name")
     private String name;

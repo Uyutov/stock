@@ -1,4 +1,4 @@
-package org.orderservice.entity;
+package org.productinventoryservice.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,8 @@ import lombok.Data;
 public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_seq")
-    private String id;
+    @SequenceGenerator(name = "warehouse_id_seq", sequenceName = "warehouse_id_seq", allocationSize = 1)
+    private Long id;
 
     @NotBlank(message = "Please provide warehouse address")
     private String address;

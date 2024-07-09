@@ -13,5 +13,8 @@ spring:
     change-log: classpath:/db/changelog/master.xml
     default-schema: public
     clear-checksums: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
 server:
   port: 8002

@@ -12,7 +12,8 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id_seq")
-    private String id;
+    @SequenceGenerator(name = "orders_id_seq", sequenceName = "orders_id_seq", allocationSize = 1)
+    private Long id;
 
     @NotBlank(message = "Please provide order state")
     private String state;

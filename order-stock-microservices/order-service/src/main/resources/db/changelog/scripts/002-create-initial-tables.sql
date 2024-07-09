@@ -1,39 +1,39 @@
-CREATE SEQUENCE orders_id_seq;
+CREATE SEQUENCE order_stock.orders_id_seq;
 
 create table order_stock.orders
 (
-    id               bigint primary key default nextval('orders_id_seq'),
-    order_state      varchar                                                                                  not null,
+    id               bigint primary key default nextval('order_stock.orders_id_seq'),
+    state            varchar                                                                                  not null,
     delivery_address varchar                                                                                  not null,
     user_id          character varying references public.user_entity (id) on update cascade on delete cascade not null
 );
 
-alter sequence orders_id_seq
+alter sequence order_stock.orders_id_seq
     owned by order_stock.orders.id;
 
-create sequence warehouse_id_seq;
+create sequence order_stock.warehouse_id_seq;
 
 create table order_stock.warehouse
 (
-    id      bigint  not null primary key default nextval('warehouse_id_seq'),
+    id      bigint  not null primary key default nextval('order_stock.warehouse_id_seq'),
     name    varchar not null,
     address varchar not null
 );
 
-alter sequence warehouse_id_seq
+alter sequence order_stock.warehouse_id_seq
     owned by order_stock.warehouse.id;
 
-create sequence product_id_seq;
+create sequence order_stock.product_id_seq;
 
 create table order_stock.product
 (
-    id    bigint primary key default nextval('product_id_seq'),
+    id    bigint primary key default nextval('order_stock.product_id_seq'),
     name  varchar not null,
     price int     not null,
     constraint product_min_price check ( price > 0 )
 );
 
-alter sequence product_id_seq
+alter sequence order_stock.product_id_seq
     owned by order_stock.product.id;
 
 create table order_stock.order_product

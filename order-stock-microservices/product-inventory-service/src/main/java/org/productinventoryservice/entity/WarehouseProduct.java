@@ -1,14 +1,9 @@
-package org.orderservice.entity;
+package org.productinventoryservice.entity;
 
-import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-import org.orderservice.entity.composite_key.WarehouseProductKey;
+import org.productinventoryservice.entity.composite_key.WarehouseProductKey;
 
 @Entity
 @Data
@@ -20,7 +15,7 @@ public class WarehouseProduct {
     @ManyToOne
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
-    private Warehouse order;
+    private Warehouse warehouse;
 
     @ManyToOne
     @MapsId("productId")
