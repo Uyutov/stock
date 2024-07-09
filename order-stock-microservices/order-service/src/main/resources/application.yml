@@ -12,5 +12,6 @@ spring:
     password : password
     change-log: classpath:/db/changelog/master.xml
     default-schema: public
+    clear-checksums: true
 server:
   port: 8002

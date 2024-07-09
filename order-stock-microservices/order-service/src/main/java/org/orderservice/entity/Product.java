@@ -10,7 +10,7 @@ import lombok.Data;
 @Table(name = "product", schema = "order_stock")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String id;
 
     @NotBlank(message = "Please provide product name")

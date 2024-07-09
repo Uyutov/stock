@@ -28,7 +28,7 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Min(0)
+    @Min(value = 0, message = "Amount should be positive")
     private Integer amount;
 
 }

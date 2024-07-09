@@ -6,11 +6,5 @@
 
     <include file="db/changelog/scripts/001-creating-schema.sql"></include>
     <include file="db/changelog/scripts/002-create-initial-tables.sql"></include>
-    <include file="db/changelog/scripts/003-add-notnull-constraint-to-orders.sql"></include>
-    <include file="db/changelog/scripts/004-add-notnul-constraint-to-product.sql"></include>
-    <include file="/db/changelog/scripts/005-add-positive-price-constraint-to-product.sql"></include>
-    <include file="/db/changelog/scripts/006-warehouse-notnull-constraints.sql"></include>
-    <include file="/db/changelog/scripts/007-positive-constrainte-to-order_product.sql"></include>
-    <include file="/db/changelog/scripts/008-positive-constrainte-to-warehouse_product.sql"></include>
 
 </databaseChangeLog>
