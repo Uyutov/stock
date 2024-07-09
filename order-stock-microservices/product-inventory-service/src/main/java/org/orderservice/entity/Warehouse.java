@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "product", schema = "order_stock")
+@Table(name = "warehouse", schema = "order_stock")
 public class Warehouse {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_seq")
     private String id;
 
     @NotBlank(message = "Please provide warehouse address")

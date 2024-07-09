@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "orders", schema = "order_stock")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id_seq")
     private String id;
 
     @NotBlank(message = "Please provide order state")
