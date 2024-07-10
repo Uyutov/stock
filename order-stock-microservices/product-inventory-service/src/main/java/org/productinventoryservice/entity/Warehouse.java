@@ -10,7 +10,7 @@ import lombok.Data;
 public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_seq")
-    @SequenceGenerator(name = "warehouse_id_seq", sequenceName = "warehouse_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "warehouse_id_seq", sequenceName = "warehouse_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
     @NotBlank(message = "Please provide warehouse address")

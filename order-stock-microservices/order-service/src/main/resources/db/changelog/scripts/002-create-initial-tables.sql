@@ -1,4 +1,4 @@
-CREATE SEQUENCE order_stock.orders_id_seq;
+create sequence order_stock.orders_id_seq increment by 5;
 
 create table order_stock.orders
 (
@@ -11,7 +11,7 @@ create table order_stock.orders
 alter sequence order_stock.orders_id_seq
     owned by order_stock.orders.id;
 
-create sequence order_stock.warehouse_id_seq;
+create sequence order_stock.warehouse_id_seq increment by 5;
 
 create table order_stock.warehouse
 (
@@ -23,7 +23,7 @@ create table order_stock.warehouse
 alter sequence order_stock.warehouse_id_seq
     owned by order_stock.warehouse.id;
 
-create sequence order_stock.product_id_seq;
+create sequence order_stock.product_id_seq increment by 5;
 
 create table order_stock.product
 (

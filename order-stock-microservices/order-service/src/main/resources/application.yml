@@ -11,7 +11,7 @@ spring:
     user: keycloak
     password : password
     change-log: classpath:/db/changelog/master.xml
-    default-schema: public
+    default-schema: order_stock
     clear-checksums: true
   jpa:
     hibernate:

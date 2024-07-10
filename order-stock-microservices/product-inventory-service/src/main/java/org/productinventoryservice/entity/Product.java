@@ -13,7 +13,7 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
-    @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
     @NotBlank(message = "Please provide product name")
