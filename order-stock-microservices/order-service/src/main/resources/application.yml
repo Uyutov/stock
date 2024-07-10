@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:postgresql://localhost:8844/keycloak_db
+    username: keycloak
+    password: password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    url: jdbc:postgresql://localhost:8844/keycloak_db
+    user: keycloak
+    password : password
+    change-log: classpath:/db/changelog/master.xml
+    default-schema: order_stock
+    clear-checksums: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+server:
+  port: 8002
