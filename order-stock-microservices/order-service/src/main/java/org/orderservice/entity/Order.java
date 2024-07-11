@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "orders", schema = "order_stock")
@@ -41,5 +43,5 @@ public class Order {
 
     @NotEmpty(message = "Order should contain at least one product")
     @OneToMany(mappedBy = "order")
-    List<OrderProduct> productAmount;
+    List<OrderProduct> orderedProducts;
 }
