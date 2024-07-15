@@ -1,4 +1,4 @@
 package org.orderservice.dto.product;
 
-public record ProductTransactionDTO(Integer id, Integer amount){
+public record ProductTransactionDTO(Long id, Integer amount){
 }

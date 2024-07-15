@@ -41,4 +41,9 @@ public class OrderProduct {
     @Min(value = 1, message = "Amount should be positive")
     private Integer amount;
 
+    public OrderProduct(Product product, Integer amount) {
+        this.product = product;
+        this.amount = amount;
+    }
+
 }

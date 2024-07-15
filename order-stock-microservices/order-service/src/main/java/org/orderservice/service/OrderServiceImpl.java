@@ -2,138 +2,110 @@ package org.orderservice.service;
 
 import org.orderservice.dto.order.OrderCreationDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
-import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.dto.product.ProductTransactionDTO;
 import org.orderservice.entity.Order;
 import org.orderservice.entity.OrderProduct;
+import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
+import org.orderservice.entity.enums.OrderState;
 import org.orderservice.mapper.OrderMapper;
-import org.orderservice.mapper.ProductMapper;
 import org.orderservice.repository.OrderRepository;
+import org.orderservice.repository.ProductRepository;
 import org.orderservice.repository.UserRepository;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final ProductMapper productMapper;
+    private final ProductRepository productRepository;
+    private final UserDetailServiceImpl userService;
     private final OrderMapper orderMapper;
-    private final String PACKAGING = "PACKAGING";
-    private final String DELIVERING = "DELIVERING";
-    private final String AWAITING = "AWAITING";
-    private final String RECEIVED = "RECEIVED";
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, ProductMapper productMapper, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            UserRepository userRepository,
+                            ProductRepository productRepository,
+                            UserDetailServiceImpl userService,
+                            OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
-        this.productMapper = productMapper;
+        this.productRepository = productRepository;
+        this.userService = userService;
         this.orderMapper = orderMapper;
     }
 
     @Override
-    public ResponseEntity<OrderResponseDTO> getOrder(Long id) {
-        Optional<Order> orderEntry = orderRepository.findById(id);
+    public OrderResponseDTO getOrder(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + id + " not found");
+        });
 
-        if (orderEntry.isPresent()) {
-            Order order = orderEntry.get();
-            OrderResponseDTO orderResponse = getResponseFromOrder(order);
-            return ResponseEntity.of(Optional.of(orderResponse));
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+        OrderResponseDTO orderResponse = orderMapper.getResponseDtoFromOrder(order);
+        return orderResponse;
     }
 
     @Override
-    public ResponseEntity<Page<OrderResponseDTO>> getOrdersPage(Pageable pageable) {
+    public Page<OrderResponseDTO> getOrdersPage(Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(pageable);
-        if(orders.getTotalElements() != 0)
-        {
-            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> getResponseFromOrder(order));
-            return ResponseEntity.ok(orderResponsePage);
-        }else
-        {
-            return ResponseEntity.notFound().build();
+        if (orders.getTotalElements() != 0) {
+            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> orderMapper.getResponseDtoFromOrder(order));
+            return orderResponsePage;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No orders found");
         }
     }
 
     @Override
-    public ResponseEntity<OrderResponseDTO> createOrder(OrderCreationDTO dto, Jwt jwt) {
-        Optional<User> userEntry = userRepository.findUserByUsername(jwt.getClaimAsString("username"));
-        if(userEntry.isPresent())
-        {
-            //TODO Check if there enough products in warehouse
-            Order newOrder = Order.builder()
-                    .user(userEntry.get())
-                    .state(PACKAGING)
-                    .deliveryAddress(dto.deliveryAddress())
-                    .orderedProducts(getOrderedProductsFromDTO(dto.products()))
-                    .build();
-            Order order = orderRepository.save(newOrder);
-            OrderResponseDTO response = getResponseFromOrder(order);
+    public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt) {
+        User user = (User) userService.loadUserByUsername(jwt.getClaim("username"));
 
-            //TODO Crete controller for orders and add link to newly created order
-            //ResponseEntity.created(response, linkTo(
-            //        methodOn(OrderController.class).getOrderById(order.getId())
-            //).withSelfRel());
+        //TODO Check if there enough products in warehouse
+        Order newOrder = Order.builder()
+                .user(user)
+                .state(OrderState.PACKAGING)
+                .deliveryAddress(dto.deliveryAddress())
+                .orderedProducts(getOrderedProductsFromDTO(dto.products()))
+                .build();
 
-            return ResponseEntity.status(201).body(response);
-        }
-        else {
-            return ResponseEntity.badRequest().build();
-        }
+        Order order = orderRepository.save(newOrder);
+        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
+
+        return response;
     }
 
     @Override
-    public ResponseEntity<Object> orderPackaged(Long id) {
-        return changeOrderStatus(id, DELIVERING);
+    public OrderResponseDTO changeOrderStatus(Long id, OrderState state) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + id + " not found");
+                }
+        );
+
+        order.setState(state);
+        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
+
+        return response;
     }
 
-    @Override
-    public ResponseEntity<Object> orderDelivered(Long id) {
-        return changeOrderStatus(id, AWAITING);
-    }
+    private List<OrderProduct> getOrderedProductsFromDTO(List<ProductTransactionDTO> productsDTOs) {
+        List<OrderProduct> orderProducts = new ArrayList<>();
 
-    @Override
-    public ResponseEntity<Object> orderReceived(Long id) {
-        return changeOrderStatus(id, RECEIVED);
-    }
-    private ResponseEntity<Object> changeOrderStatus(Long id, String status)
-    {
-        Optional<Order> orderEntry = orderRepository.findById(id);
-        if(orderEntry.isPresent())
-        {
-            Order packagedOrder = orderEntry.get();
-            packagedOrder.setState(DELIVERING);
-            orderRepository.save(packagedOrder);
-
-            return ResponseEntity.status(204).build();
-            //TODO after creation of controllers add link to updated order
-            //return ResponseEntity.status(204)
-            //        .location(linkTo(
-            //                        methodOn(OrderController.class).getOrderById(packagedOrder.getId())
-            //                ).withSelfRel());
-        }else {
-            return ResponseEntity.notFound().build();
+        for (var dto : productsDTOs) {
+            Product product = productRepository.findById(dto.id()).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + dto.id() + " not found")
+            );
+            orderProducts.add(new OrderProduct(product, dto.amount()));
         }
-    }
-    private OrderResponseDTO getResponseFromOrder(Order order)
-    {
-        List<ProductResponseDTO> orderedProducts = productMapper.getResponseFromOrderedProducts(order.getOrderedProducts());
-        return orderMapper.getResponseDtoFromOrderAndProductsList(order, orderedProducts);
-    }
-    private List<OrderProduct> getOrderedProductsFromDTO(List<ProductTransactionDTO> dto)
-    {
-        return null;
+
+        return orderProducts;
     }
 }

@@ -1,28 +1,26 @@
 package org.orderservice.mapper;
 
 import org.orderservice.dto.product.ProductResponseDTO;
+import org.orderservice.dto.product.ProductTransactionDTO;
 import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
+import org.orderservice.exception.ProductMapperException;
 
 import java.util.List;
 
 public class ProductMapper {
-    public List<ProductResponseDTO> getResponseFromOrderedProducts(List<OrderProduct> orderedProducts) {
-        if (orderedProducts == null || orderedProducts.isEmpty()) {
-            throw new NullPointerException("List of ordered products cannot be empty");
+    public ProductResponseDTO getResponseFromOrderedProducts(OrderProduct orderProduct) {
+        if (orderProduct == null) {
+            throw new ProductMapperException("List of ordered products cannot be empty");
         }
 
-        List<ProductResponseDTO> products = orderedProducts.stream().map(orderedProduct -> {
-            Product product = orderedProduct.getProduct();
+        Product product = orderProduct.getProduct();
 
-            return ProductResponseDTO.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .price(product.getPrice())
-                    .amount(orderedProduct.getAmount())
-                    .build();
-        }).toList();
-
-        return products;
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .amount(orderProduct.getAmount())
+                .build();
     }
 }
