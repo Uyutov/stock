@@ -1,23 +1,25 @@
 package org.orderservice.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.orderservice.dto.order.OrderCreationDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
 import org.orderservice.dto.product.ProductTransactionDTO;
+import org.orderservice.dto.user.UserDTO;
 import org.orderservice.entity.Order;
 import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
 import org.orderservice.entity.enums.OrderState;
+import org.orderservice.exception.OrderMappingException;
+import org.orderservice.exception.UserMappingException;
 import org.orderservice.mapper.OrderMapper;
+import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderRepository;
 import org.orderservice.repository.ProductRepository;
-import org.orderservice.repository.UserRepository;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,30 +29,30 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final UserDetailServiceImpl userService;
     private final OrderMapper orderMapper;
+    private final UserMapper userMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            UserRepository userRepository,
                             ProductRepository productRepository,
                             UserDetailServiceImpl userService,
-                            OrderMapper orderMapper) {
+                            OrderMapper orderMapper,
+                            UserMapper userMapper) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.userService = userService;
         this.orderMapper = orderMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
     public OrderResponseDTO getOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> {
-            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + id + " not found");
+            return new EntityNotFoundException("Order with id " + id + " not found");
         });
 
-        OrderResponseDTO orderResponse = orderMapper.getResponseDtoFromOrder(order);
+        OrderResponseDTO orderResponse = validateBeforeMappingFromOrderToDTO(order);
         return orderResponse;
     }
 
@@ -58,18 +60,18 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponseDTO> getOrdersPage(Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(pageable);
         if (orders.getTotalElements() != 0) {
-            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> orderMapper.getResponseDtoFromOrder(order));
+            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> validateBeforeMappingFromOrderToDTO(order));
             return orderResponsePage;
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No orders found");
         }
+        return Page.empty();
     }
 
     @Override
     public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt) {
-        User user = (User) userService.loadUserByUsername(jwt.getClaim("username"));
+        UserDTO userDTO = (UserDTO) userService.loadUserByUsername(jwt.getClaim("username"));
 
-        //TODO Check if there enough products in warehouse
+        User user = validateBeforeMappingFromDTOToUser(userDTO);
+
         Order newOrder = Order.builder()
                 .user(user)
                 .state(OrderState.PACKAGING)
@@ -78,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         Order order = orderRepository.save(newOrder);
-        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
+        OrderResponseDTO response = validateBeforeMappingFromOrderToDTO(order);
 
         return response;
     }
@@ -86,12 +88,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDTO changeOrderStatus(Long id, OrderState state) {
         Order order = orderRepository.findById(id).orElseThrow(() -> {
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + id + " not found");
+                    return new EntityNotFoundException("Order with id " + id + " not found");
                 }
         );
 
         order.setState(state);
-        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
+        OrderResponseDTO response = validateBeforeMappingFromOrderToDTO(orderRepository.save(order));
 
         return response;
     }
@@ -101,11 +103,32 @@ public class OrderServiceImpl implements OrderService {
 
         for (var dto : productsDTOs) {
             Product product = productRepository.findById(dto.id()).orElseThrow(() ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id " + dto.id() + " not found")
+                    new EntityNotFoundException("Order with id " + dto.id() + " not found")
             );
             orderProducts.add(new OrderProduct(product, dto.amount()));
         }
 
         return orderProducts;
     }
+
+    private OrderResponseDTO validateBeforeMappingFromOrderToDTO(Order order) {
+        if (order == null) {
+            throw new OrderMappingException("Order must be present to map it");
+        }
+
+        if (order.getOrderedProducts() == null || order.getOrderedProducts().isEmpty()) {
+            throw new OrderMappingException("Order cannot be mapped without ordered products");
+        }
+        return  orderMapper.getResponseDtoFromOrder(order);
+    }
+
+    private User validateBeforeMappingFromDTOToUser(UserDTO dto) {
+        if (dto == null)
+        {
+            throw new UserMappingException("User dto must be present to map it");
+        }
+
+        return userMapper.getUserFromDTO(dto);
+    }
+
 }

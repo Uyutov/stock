@@ -5,6 +5,7 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orderservice.entity.composite_key.OrderProductKey;
+import org.orderservice.entity.enums.OrderState;
 
 import java.util.List;
 
@@ -15,8 +16,8 @@ class OrderProductTest {
     static Validator validator;
 
     private final Integer AMOUNT = 5;
-    private final Order ORDER = new Order(-1L, "ASSEMBLING", "Golubeva", new User(), null);
-    private final Product PRODUCT = new Product(-1L, "Appple", 10);
+    private final Order ORDER = new Order(-1L, OrderState.PACKAGING, "Golubeva", new User(), null);
+    private final Product PRODUCT = new Product(-1L, "Apple", 10);
     private final OrderProductKey KEY = new OrderProductKey(ORDER.getId(), PRODUCT.getId());
     @BeforeAll
     public static void setUpClass() {

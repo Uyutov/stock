@@ -10,10 +10,6 @@ import java.util.List;
 
 public class ProductMapper {
     public ProductResponseDTO getResponseFromOrderedProducts(OrderProduct orderProduct) {
-        if (orderProduct == null) {
-            throw new ProductMapperException("List of ordered products cannot be empty");
-        }
-
         Product product = orderProduct.getProduct();
 
         return ProductResponseDTO.builder()

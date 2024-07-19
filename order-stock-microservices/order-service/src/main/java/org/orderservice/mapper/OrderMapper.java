@@ -15,18 +15,10 @@ public class OrderMapper {
     }
 
     public OrderResponseDTO getResponseDtoFromOrder(Order order) {
-        if (order == null) {
-            throw new OrderMappingException("Order must be present to map it");
-        }
-
         List<ProductResponseDTO> orderedProducts = order.getOrderedProducts()
                 .stream().map(
                         product -> productMapper.getResponseFromOrderedProducts(product)
                 ).toList();
-
-        if (orderedProducts == null || orderedProducts.isEmpty()) {
-            throw new OrderMappingException("Order cannot be mapped without ordered products");
-        }
 
         return OrderResponseDTO.builder()
                 .id(order.getId())
