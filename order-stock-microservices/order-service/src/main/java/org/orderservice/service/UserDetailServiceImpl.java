@@ -28,15 +28,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
             return new EntityNotFoundException("User with username " + username + " not found");
         });
 
-        return validateBeforeMappingFromUserToDTO(user);
-    }
-
-    private UserDTO validateBeforeMappingFromUserToDTO(User user)
-    {
-        if(user == null)
-        {
-            throw new UserMappingException("User must be present to map it");
-        }
         return userMapper.getDTOFromUser(user);
     }
 }

@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
             return new EntityNotFoundException("Order with id " + id + " not found");
         });
 
-        OrderResponseDTO orderResponse = validateBeforeMappingFromOrderToDTO(order);
+        OrderResponseDTO orderResponse = orderMapper.getResponseDtoFromOrder(order);
         return orderResponse;
     }
 
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponseDTO> getOrdersPage(Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(pageable);
         if (orders.getTotalElements() != 0) {
-            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> validateBeforeMappingFromOrderToDTO(order));
+            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> orderMapper.getResponseDtoFromOrder(order));
             return orderResponsePage;
         }
         return Page.empty();
@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt) {
         UserDTO userDTO = (UserDTO) userService.loadUserByUsername(jwt.getClaim("username"));
 
-        User user = validateBeforeMappingFromDTOToUser(userDTO);
+        User user = userMapper.getUserFromDTO(userDTO);
 
         Order newOrder = Order.builder()
                 .user(user)
@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         Order order = orderRepository.save(newOrder);
-        OrderResponseDTO response = validateBeforeMappingFromOrderToDTO(order);
+        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
 
         return response;
     }
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
         );
 
         order.setState(state);
-        OrderResponseDTO response = validateBeforeMappingFromOrderToDTO(orderRepository.save(order));
+        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
 
         return response;
     }
@@ -110,25 +110,4 @@ public class OrderServiceImpl implements OrderService {
 
         return orderProducts;
     }
-
-    private OrderResponseDTO validateBeforeMappingFromOrderToDTO(Order order) {
-        if (order == null) {
-            throw new OrderMappingException("Order must be present to map it");
-        }
-
-        if (order.getOrderedProducts() == null || order.getOrderedProducts().isEmpty()) {
-            throw new OrderMappingException("Order cannot be mapped without ordered products");
-        }
-        return  orderMapper.getResponseDtoFromOrder(order);
-    }
-
-    private User validateBeforeMappingFromDTOToUser(UserDTO dto) {
-        if (dto == null)
-        {
-            throw new UserMappingException("User dto must be present to map it");
-        }
-
-        return userMapper.getUserFromDTO(dto);
-    }
-
 }
