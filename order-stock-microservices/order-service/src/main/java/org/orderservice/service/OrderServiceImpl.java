@@ -10,8 +10,6 @@ import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
 import org.orderservice.entity.enums.OrderState;
-import org.orderservice.exception.OrderMappingException;
-import org.orderservice.exception.UserMappingException;
 import org.orderservice.mapper.OrderMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderRepository;
@@ -24,8 +22,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -33,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private final UserDetailServiceImpl userService;
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
+
+    private final OrderState PACKAGING = OrderState.PACKAGING;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
@@ -74,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order newOrder = Order.builder()
                 .user(user)
-                .state(OrderState.PACKAGING)
+                .state(PACKAGING)
                 .deliveryAddress(dto.deliveryAddress())
                 .orderedProducts(getOrderedProductsFromDTO(dto.products()))
                 .build();

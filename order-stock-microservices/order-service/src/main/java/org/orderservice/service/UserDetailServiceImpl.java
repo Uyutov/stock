@@ -1,16 +1,12 @@
 package org.orderservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.orderservice.dto.user.UserDTO;
 import org.orderservice.entity.User;
-import org.orderservice.exception.UserMappingException;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.server.ResponseStatusException;
 
 public class UserDetailServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;

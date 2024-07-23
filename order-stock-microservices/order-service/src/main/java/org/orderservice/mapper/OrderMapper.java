@@ -3,7 +3,6 @@ package org.orderservice.mapper;
 import org.orderservice.dto.order.OrderResponseDTO;
 import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.entity.Order;
-import org.orderservice.exception.OrderMappingException;
 
 import java.util.List;
 

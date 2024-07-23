@@ -1,12 +1,8 @@
 package org.orderservice.mapper;
 
 import org.orderservice.dto.product.ProductResponseDTO;
-import org.orderservice.dto.product.ProductTransactionDTO;
 import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
-import org.orderservice.exception.ProductMapperException;
-
-import java.util.List;
 
 public class ProductMapper {
     public ProductResponseDTO getResponseFromOrderedProducts(OrderProduct orderProduct) {
