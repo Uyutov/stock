@@ -26,10 +26,6 @@ public class OrderProduct {
     @NotNull(message = "Amount could not be null")
     @Min(value = 1, message = "Amount should be positive")
     private Integer amount;
-}
-
-
-/*
 
     @ManyToOne
     @MapsId("orderId")
@@ -42,4 +38,4 @@ public class OrderProduct {
     @NotNull(message = "Product must be specified")
     @JoinColumn(name = "product_id")
     private Product product;
-*/
+}
