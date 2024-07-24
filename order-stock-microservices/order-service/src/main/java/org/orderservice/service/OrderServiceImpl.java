@@ -9,6 +9,7 @@ import org.orderservice.entity.Order;
 import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
+import org.orderservice.entity.composite_key.OrderProductKey;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.mapper.OrderMapper;
 import org.orderservice.mapper.UserMapper;
@@ -74,10 +75,21 @@ public class OrderServiceImpl implements OrderService {
                 .user(user)
                 .state(PACKAGING)
                 .deliveryAddress(dto.deliveryAddress())
-                .orderedProducts(getOrderedProductsFromDTO(dto.products()))
                 .build();
 
         Order order = orderRepository.save(newOrder);
+
+        List<OrderProduct> orderProducts = new ArrayList<>();
+
+        for (var productDTO : dto.products()) {
+            Product product = productRepository.findById(productDTO.id()).orElseThrow(() ->
+                    new EntityNotFoundException("Order with id " + productDTO.id() + " not found")
+            );
+            orderProducts.add(new OrderProduct(new OrderProductKey(order.getId(), product.getId()), productDTO.amount()));
+        }
+
+
+
         OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
 
         return response;
@@ -94,18 +106,5 @@ public class OrderServiceImpl implements OrderService {
         OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
 
         return response;
-    }
-
-    private List<OrderProduct> getOrderedProductsFromDTO(List<ProductTransactionDTO> productsDTOs) {
-        List<OrderProduct> orderProducts = new ArrayList<>();
-
-        for (var dto : productsDTOs) {
-            Product product = productRepository.findById(dto.id()).orElseThrow(() ->
-                    new EntityNotFoundException("Order with id " + dto.id() + " not found")
-            );
-            orderProducts.add(new OrderProduct(product, dto.amount()));
-        }
-
-        return orderProducts;
     }
 }

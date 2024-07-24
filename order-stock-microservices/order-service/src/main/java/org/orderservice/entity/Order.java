@@ -34,8 +34,4 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @NotEmpty(message = "Order should contain at least one product")
-    @OneToMany(mappedBy = "order")
-    List<OrderProduct> orderedProducts;
 }

@@ -19,10 +19,17 @@ import org.orderservice.entity.composite_key.OrderProductKey;
 @NoArgsConstructor
 @Table(name = "order_product", schema = "order_stock")
 public class OrderProduct {
-
     @EmbeddedId
     @NotNull(message = "OrderProduct embedded id must be specified")
     private OrderProductKey id;
+
+    @NotNull(message = "Amount could not be null")
+    @Min(value = 1, message = "Amount should be positive")
+    private Integer amount;
+}
+
+
+/*
 
     @ManyToOne
     @MapsId("orderId")
@@ -35,14 +42,4 @@ public class OrderProduct {
     @NotNull(message = "Product must be specified")
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @NotNull(message = "Amount could not be null")
-    @Min(value = 1, message = "Amount should be positive")
-    private Integer amount;
-
-    public OrderProduct(Product product, Integer amount) {
-        this.product = product;
-        this.amount = amount;
-    }
-
-}
+*/
