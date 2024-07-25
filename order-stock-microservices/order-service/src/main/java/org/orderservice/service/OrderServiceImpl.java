@@ -88,7 +88,13 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findById(productDTO.id()).orElseThrow(() ->
                     new EntityNotFoundException("Order with id " + productDTO.id() + " not found")
             );
-            orderProducts.add(new OrderProduct(new OrderProductKey(order.getId(), product.getId()), productDTO.amount(), order, product));
+            orderProducts.add(
+                    new OrderProduct(
+                            new OrderProductKey(order.getId(), product.getId()),
+                            productDTO.amount(),
+                            order,
+                            product)
+            );
         }
 
         order.setProducts(orderProductRepository.saveAll(orderProducts));
