@@ -2,12 +2,20 @@ package org.orderservice.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.orderservice.entity.enums.OrderState;
 
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "orders", schema = "order_stock")
 public class Order {
     @Id
@@ -16,14 +24,16 @@ public class Order {
     private Long id;
 
     @NotBlank(message = "Please provide order state")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private OrderState state;
     @NotBlank(message = "Please provide delivery address for order")
     private String deliveryAddress;
 
+    @NotNull(message = "User must be specified")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "order")
-    List<OrderProduct> productAmount;
+    List<OrderProduct> products;
 }
