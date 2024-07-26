@@ -130,19 +130,6 @@ class OrderServiceImplTest {
                         bottleProductResponse
                 ))
                 .build();
-
-
-
-
-
-        /*Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        Mockito.when(orderRepository.save(order)).thenReturn(order);
-        Mockito.when(orderRepository.findAll(pageable)).thenReturn(ordersPage);
-
-        Mockito.when(orderProductRepository.saveAll(orderedProducts)).thenReturn(orderedProducts);
-
-        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(apple));
-        Mockito.when(productRepository.findById(2L)).thenReturn(Optional.of(bottle));*/
     }
 
     @Test
