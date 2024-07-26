@@ -18,6 +18,7 @@ import org.orderservice.repository.ProductRepository;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
-    private final UserDetailServiceImpl userService;
+    private final UserDetailsService userService;
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
 
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
                             OrderProductRepository orderProductRepository,
-                            UserDetailServiceImpl userService,
+                            UserDetailsService userService,
                             OrderMapper orderMapper,
                             UserMapper userMapper) {
         this.orderRepository = orderRepository;

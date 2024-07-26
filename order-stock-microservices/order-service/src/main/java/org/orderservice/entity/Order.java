@@ -2,6 +2,7 @@ package org.orderservice.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class Order {
     @SequenceGenerator(name = "orders_id_seq", sequenceName = "orders_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
-    @NotBlank(message = "Please provide order state")
+    @NotNull(message = "Please provide order state")
     @Enumerated(EnumType.STRING)
     private OrderState state;
     @NotBlank(message = "Please provide delivery address for order")
@@ -34,6 +35,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotEmpty(message = "Order should contain at least one product")
     @OneToMany(mappedBy = "order")
     List<OrderProduct> products;
 }

@@ -26,7 +26,7 @@ class OrderProductTest {
 
     @Test
     public void successfulOrderProductConnectionCreation() {
-        var orderProduct = new OrderProduct(KEY, ORDER, PRODUCT, AMOUNT);
+        var orderProduct = new OrderProduct(KEY, AMOUNT, ORDER, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         assertThat(violations.size()).isEqualTo(0);
@@ -34,7 +34,7 @@ class OrderProductTest {
 
     @Test
     public void nullIdInOrderProduct() {
-        var orderProduct = new OrderProduct(null, ORDER, PRODUCT, AMOUNT);
+        var orderProduct = new OrderProduct(null, AMOUNT, ORDER, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -45,7 +45,7 @@ class OrderProductTest {
 
     @Test
     public void nullOrderInOrderProduct() {
-        var orderProduct = new OrderProduct(KEY, null, PRODUCT, AMOUNT);
+        var orderProduct = new OrderProduct(KEY, AMOUNT, null, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -56,7 +56,7 @@ class OrderProductTest {
 
     @Test
     public void nullProductInOrderProduct() {
-        var orderProduct = new OrderProduct(KEY, ORDER, null, AMOUNT);
+        var orderProduct = new OrderProduct(KEY, AMOUNT, ORDER, null);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -67,7 +67,7 @@ class OrderProductTest {
 
     @Test
     public void nullAmountInOrderProduct() {
-        var orderProduct = new OrderProduct(KEY, ORDER, PRODUCT, null);
+        var orderProduct = new OrderProduct(KEY, null, ORDER, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -78,7 +78,7 @@ class OrderProductTest {
 
     @Test
     public void amountEqualsZeroInOrderProduct() {
-        var orderProduct = new OrderProduct(KEY, ORDER, PRODUCT, 0);
+        var orderProduct = new OrderProduct(KEY, 0, ORDER, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -89,7 +89,7 @@ class OrderProductTest {
 
     @Test
     public void negativeAmountInOrderProduct() {
-        var orderProduct = new OrderProduct(KEY, ORDER, PRODUCT, -10);
+        var orderProduct = new OrderProduct(KEY, -10, ORDER, PRODUCT);
         var violations = validator.validate(orderProduct);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -100,7 +100,7 @@ class OrderProductTest {
 
     @Test
     public void wrongCreationOfOrderProduct() {
-        var orderProduct = new OrderProduct(null, null, null, -10);
+        var orderProduct = new OrderProduct(null, 0, null, null);
         var violations = validator.validate(orderProduct);
 
         List<String> violationMessages = violations.stream().map(violation -> violation.getMessage()).toList();
