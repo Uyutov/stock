@@ -31,7 +31,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,8 +69,12 @@ class OrderServiceImplTest {
     private ProductResponseDTO bottleProductResponse;
 
     @BeforeEach
-    public void setUpAll() {
-        user = new User("1", "Vladimir", "Vladimir@gmail.com");
+    public void setUp() {
+        user = User.builder()
+                .id("1")
+                .email("Vladimir@gmail.com")
+                .username("Vladimir")
+                .build();
 
         order = Order.builder()
                 .id(1L)
@@ -92,12 +95,12 @@ class OrderServiceImplTest {
                 .price(20)
                 .build();
 
-        OrderProductKey firstProductKey = new OrderProductKey(order.getId(), apple.getId());
-        OrderProductKey secondProductKey = new OrderProductKey(order.getId(), bottle.getId());
+        OrderProductKey appleOrderProductKey = new OrderProductKey(order.getId(), apple.getId());
+        OrderProductKey bottleOrderProductKey = new OrderProductKey(order.getId(), bottle.getId());
 
         orderedProducts = List.of(
-                new OrderProduct(firstProductKey, 5, order, apple),
-                new OrderProduct(secondProductKey, 10, order, bottle)
+                new OrderProduct(appleOrderProductKey, 5, order, apple),
+                new OrderProduct(bottleOrderProductKey, 10, order, bottle)
         );
 
         order.setProducts(orderedProducts);
@@ -125,6 +128,7 @@ class OrderServiceImplTest {
         orderResponse = OrderResponseDTO.builder()
                 .id(order.getId())
                 .state(order.getState().toString())
+                .deliveryAddress(order.getDeliveryAddress())
                 .products(List.of(
                         appleProductResponse,
                         bottleProductResponse
@@ -234,6 +238,7 @@ class OrderServiceImplTest {
         OrderResponseDTO orderResponseWithNewState = OrderResponseDTO.builder()
                 .id(orderResponse.id())
                 .state(orderWithNewState.getState().toString())
+                .deliveryAddress(orderResponse.deliveryAddress())
                 .products(orderResponse.products())
                 .build();
 

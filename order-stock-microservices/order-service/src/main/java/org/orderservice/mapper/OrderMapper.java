@@ -22,6 +22,7 @@ public class OrderMapper {
         return OrderResponseDTO.builder()
                 .id(order.getId())
                 .state(order.getState().toString())
+                .deliveryAddress(order.getDeliveryAddress())
                 .products(orderedProducts)
                 .build();
     }
