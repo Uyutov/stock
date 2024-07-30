@@ -1,41 +1,133 @@
 package org.orderservice.service;
 
 
-import org.productinventoryservice.dto.product.DeleteProductDTO;
-import org.productinventoryservice.dto.product.NewProductDTO;
-import org.productinventoryservice.dto.product.ProductTransactionDTO;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.productinventoryservice.dto.product.*;
+import org.productinventoryservice.entity.Product;
+import org.productinventoryservice.entity.Warehouse;
+import org.productinventoryservice.entity.WarehouseProduct;
+import org.productinventoryservice.entity.composite_key.WarehouseProductKey;
+import org.productinventoryservice.exception.ProductException;
+import org.productinventoryservice.mapper.ProductMapper;
 import org.productinventoryservice.repository.ProductRepository;
+import org.productinventoryservice.repository.WarehouseProductRepository;
 import org.productinventoryservice.service.interfaces.ProductService;
+import org.productinventoryservice.service.WarehouseServiceImpl;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ProductServiceImpl implements ProductService {
+    private final WarehouseServiceImpl warehouseService;
+
     private final ProductRepository productRepository;
+    private final WarehouseProductRepository warehouseProductRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    private final ProductMapper productMapper;
+
+    public ProductServiceImpl(WarehouseServiceImpl warehouseService,
+                              ProductRepository productRepository,
+                              WarehouseProductRepository warehouseProductRepository,
+                              ProductMapper productMapper) {
+        this.warehouseService = warehouseService;
         this.productRepository = productRepository;
+        this.warehouseProductRepository = warehouseProductRepository;
+        this.productMapper = productMapper;
     }
 
     @Override
-    public void createProduct(NewProductDTO dto) {
+    public ProductDTO createProduct(NewProductDTO dto) {
+        Warehouse warehouse = warehouseService.getWarehouseById(dto.warehouse().id());
 
+        Optional<Product> existingProduct = productRepository.findIfProductAlreadyExists(dto.name(), warehouse.getId());
+
+        if (existingProduct.isPresent()) {
+            throw new ProductException("Product already exists in this warehouse");
+        }
+
+        Product newProduct = Product.builder()
+                .name(dto.name())
+                .price(dto.price())
+                .build();
+
+        newProduct = productRepository.save(newProduct);
+
+        WarehouseProductKey warehouseProductKey = new WarehouseProductKey(warehouse.getId(), newProduct.getId());
+
+        WarehouseProduct warehouseProduct = WarehouseProduct.builder()
+                .id(warehouseProductKey)
+                .product(newProduct)
+                .warehouse(warehouse)
+                .amount(dto.amount())
+                .build();
+
+        warehouseProductRepository.save(warehouseProduct);
+
+        return productMapper.getDTOFromProduct(newProduct);
     }
 
     @Override
-    public void addProduct(ProductTransactionDTO dto) {
+    public ProductDTO addProduct(AddProductTransactionDTO dto) {
+        Product product = productRepository.findById(dto.productId()).orElseThrow(() -> {
+            return new EntityNotFoundException("Product with productId " + dto.productId() + " not found");
+        });
 
+        WarehouseProductKey warehouseProductKey = new WarehouseProductKey(dto.warehouseId(), dto.productId());
+
+        WarehouseProduct productAmount = warehouseProductRepository.findById(warehouseProductKey).orElseThrow(() -> {
+            return new EntityNotFoundException(
+                    "Could not found product with id " + dto.productId() +
+                            " in warehouse with id " + dto.warehouseId()
+            );
+        });
+
+        productAmount.setAmount(productAmount.getAmount() + dto.amount());
+
+        return productMapper.getDTOFromProduct(product);
     }
 
     @Override
-    public void takeProduct(ProductTransactionDTO dto) {
+    @Transactional
+    public Boolean takeProduct(List<ProductSubtractionTransactionDTO> requestedProducts) {
+        for (var request : requestedProducts) {
+            Optional<Product> product = productRepository.findById(request.productId());
+            Integer requestedProductAmount = request.amount();
 
+            if (product.isEmpty()) return false;
+
+            Integer stockAmount = product.get().getProductAmount().stream()
+                    .mapToInt(productInWarehouse -> productInWarehouse.getAmount()).sum();
+
+            if (stockAmount > requestedProductAmount) return false;
+
+            for (var productInWarehouse : product.get().getProductAmount()) {
+                if (requestedProductAmount > productInWarehouse.getAmount()) {
+                    requestedProductAmount -= productInWarehouse.getAmount();
+                    productInWarehouse.setAmount(0);
+                } else {
+                    productInWarehouse.setAmount(productInWarehouse.getAmount() - requestedProductAmount);
+                    break;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
-    public void updateProduct(NewProductDTO dto) {
+    public ProductDTO updateProduct(ProductDTO dto) {
+        Product product = productRepository.findById(dto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Product with id " + dto.id() + " not found"));
 
+        product.setName(dto.name());
+        product.setPrice(dto.price());
+
+        Product newProduct = productRepository.save(product);
+        return productMapper.getDTOFromProduct(newProduct);
     }
 
     @Override
     public void deleteProduct(DeleteProductDTO dto) {
-
+        productRepository.deleteById(dto.id());
     }
 }
