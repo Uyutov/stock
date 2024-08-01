@@ -8,7 +8,7 @@ import org.productinventoryservice.entity.Product;
 import org.productinventoryservice.entity.Warehouse;
 import org.productinventoryservice.entity.WarehouseProduct;
 import org.productinventoryservice.entity.composite_key.WarehouseProductKey;
-import org.productinventoryservice.exception.ProductException;
+import org.productinventoryservice.exception.RepeatedProductCreationException;
 import org.productinventoryservice.mapper.ProductMapper;
 import org.productinventoryservice.repository.ProductRepository;
 import org.productinventoryservice.repository.WarehouseProductRepository;
@@ -25,6 +25,9 @@ public class ProductServiceImpl implements ProductService {
     private final WarehouseProductRepository warehouseProductRepository;
 
     private final ProductMapper productMapper;
+
+    private final String PRODUCT_ALREADY_EXIST_EXC = "Product already exists in this warehouse";
+    private final String PRODUCT_NOT_FOUND_EXC = "Could not find product with id ";
 
     public ProductServiceImpl(WarehouseServiceImpl warehouseService,
                               ProductRepository productRepository,
@@ -43,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> existingProduct = productRepository.findIfProductAlreadyExists(dto.name(), warehouse.getId());
 
         if (existingProduct.isPresent()) {
-            throw new ProductException("Product already exists in this warehouse");
+            throw new RepeatedProductCreationException(PRODUCT_ALREADY_EXIST_EXC);
         }
 
         Product newProduct = Product.builder()
@@ -70,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO addProduct(AddProductTransactionDTO dto) {
         Product product = productRepository.findById(dto.productId()).orElseThrow(() -> {
-            return new EntityNotFoundException("Product with productId " + dto.productId() + " not found");
+            return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + dto.productId());
         });
 
         WarehouseProductKey warehouseProductKey = new WarehouseProductKey(dto.warehouseId(), dto.productId());
@@ -89,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Boolean takeProduct(List<ProductSubtractionTransactionDTO> requestedProducts) {
+    public Boolean checkForProductAvailabilityAndSubtractThem(List<ProductSubtractionTransactionDTO> requestedProducts) {
         for (var request : requestedProducts) {
             Optional<Product> product = productRepository.findById(request.productId());
             Integer requestedProductAmount = request.amount();
@@ -117,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO updateProduct(ProductDTO dto) {
         Product product = productRepository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Product with id " + dto.id() + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + dto.id()));
 
         product.setName(dto.name());
         product.setPrice(dto.price());

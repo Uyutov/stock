@@ -11,3 +11,8 @@ spring:
       ddl-auto: validate
 server:
   port: 8003
+
+rabbitmq:
+  queue: product.availability.request
+  exchange: product.availability
+  routing-key: product
