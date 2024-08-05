@@ -1,16 +1,26 @@
 package org.productinventoryservice.component;
 
-import org.springframework.amqp.core.DirectExchange;
+
+import org.productinventoryservice.dto.product.ProductSubtractionTransactionDTO;
+import org.productinventoryservice.service.ProductServiceImpl;
+import org.productinventoryservice.service.interfaces.ProductService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ProductAvailabilityReceiver {
 
+    private final ProductService productService;
+
+    public ProductAvailabilityReceiver(ProductService productService) {
+        this.productService = productService;
+    }
+
     @RabbitListener
-    public void checkProductAvailability() {
-        //TODO implement logic of receiving, converting to dto and checking for availability
+    public Boolean checkProductAvailability(List<ProductSubtractionTransactionDTO> products) {
+        return productService.checkForProductAvailabilityAndSubtractThem(products);
     }
 
 }

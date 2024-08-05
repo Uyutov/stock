@@ -1,4 +1,4 @@
-package org.orderservice.service;
+package org.productinventoryservice.service;
 
 
 import jakarta.persistence.EntityNotFoundException;
@@ -13,13 +13,15 @@ import org.productinventoryservice.mapper.ProductMapper;
 import org.productinventoryservice.repository.ProductRepository;
 import org.productinventoryservice.repository.WarehouseProductRepository;
 import org.productinventoryservice.service.interfaces.ProductService;
-import org.productinventoryservice.service.WarehouseServiceImpl;
+import org.productinventoryservice.service.interfaces.WarehouseService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ProductServiceImpl implements ProductService {
-    private final WarehouseServiceImpl warehouseService;
+    private final WarehouseService warehouseService;
 
     private final ProductRepository productRepository;
     private final WarehouseProductRepository warehouseProductRepository;
@@ -28,8 +30,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final String PRODUCT_ALREADY_EXIST_EXC = "Product already exists in this warehouse";
     private final String PRODUCT_NOT_FOUND_EXC = "Could not find product with id ";
-
-    public ProductServiceImpl(WarehouseServiceImpl warehouseService,
+    private final String PRODUCT_NOT_FOUND_IN_WAREHOUSE = "Could not found product with id %d in warehouse with id %d";
+    public ProductServiceImpl(WarehouseService warehouseService,
                               ProductRepository productRepository,
                               WarehouseProductRepository warehouseProductRepository,
                               ProductMapper productMapper) {
@@ -79,14 +81,11 @@ public class ProductServiceImpl implements ProductService {
         WarehouseProductKey warehouseProductKey = new WarehouseProductKey(dto.warehouseId(), dto.productId());
 
         WarehouseProduct productAmount = warehouseProductRepository.findById(warehouseProductKey).orElseThrow(() -> {
-            return new EntityNotFoundException(
-                    "Could not found product with id " + dto.productId() +
-                            " in warehouse with id " + dto.warehouseId()
+            return new EntityNotFoundException(String.format(PRODUCT_NOT_FOUND_IN_WAREHOUSE, dto.productId(),dto.warehouseId())
             );
         });
 
         productAmount.setAmount(productAmount.getAmount() + dto.amount());
-
         return productMapper.getDTOFromProduct(product);
     }
 

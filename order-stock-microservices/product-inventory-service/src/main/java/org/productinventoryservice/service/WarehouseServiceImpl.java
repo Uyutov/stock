@@ -8,9 +8,11 @@ import org.productinventoryservice.exception.RepeatedWarehouseCreationException;
 import org.productinventoryservice.mapper.WarehouseMapper;
 import org.productinventoryservice.repository.WarehouseRepository;
 import org.productinventoryservice.service.interfaces.WarehouseService;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final WarehouseMapper warehouseMapper;

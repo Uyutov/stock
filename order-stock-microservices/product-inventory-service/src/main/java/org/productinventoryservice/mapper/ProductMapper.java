@@ -1,9 +1,10 @@
 package org.productinventoryservice.mapper;
 
-import org.productinventoryservice.dto.product.NewProductDTO;
 import org.productinventoryservice.dto.product.ProductDTO;
 import org.productinventoryservice.entity.Product;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductMapper {
 
     public ProductDTO getDTOFromProduct(Product product) {
