@@ -10,14 +10,18 @@ import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
 import org.orderservice.entity.composite_key.OrderProductKey;
 import org.orderservice.entity.enums.OrderState;
+import org.orderservice.exception.NotEnoughProductException;
 import org.orderservice.mapper.OrderMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
 import org.orderservice.repository.OrderRepository;
 import org.orderservice.repository.ProductRepository;
 import org.orderservice.service.interfaces.OrderService;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.ArrayList;
@@ -28,24 +32,32 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
-    private final UserDetailServiceImpl userService;
+    private final UserDetailsService userService;
+
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
+
+    private final RabbitTemplate rabbitTemplate;
+    private final DirectExchange exchange;
 
     private final OrderState PACKAGING = OrderState.PACKAGING;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
                             OrderProductRepository orderProductRepository,
-                            UserDetailServiceImpl userService,
+                            UserDetailsService userService,
                             OrderMapper orderMapper,
-                            UserMapper userMapper) {
+                            UserMapper userMapper,
+                            RabbitTemplate rabbitTemplate,
+                            DirectExchange exchange) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.orderProductRepository = orderProductRepository;
         this.userService = userService;
         this.orderMapper = orderMapper;
         this.userMapper = userMapper;
+        this.rabbitTemplate = rabbitTemplate;
+        this.exchange = exchange;
     }
 
     @Override
@@ -74,34 +86,40 @@ public class OrderServiceImpl implements OrderService {
 
         User user = userMapper.getUserFromDTO(userDTO);
 
-        Order newOrder = Order.builder()
-                .user(user)
-                .state(PACKAGING)
-                .deliveryAddress(dto.deliveryAddress())
-                .build();
+        Boolean canCreateOrder = (Boolean) rabbitTemplate.convertSendAndReceive(exchange.getName(), dto.products());
 
-        Order order = orderRepository.save(newOrder);
+        if(canCreateOrder) {
+            Order newOrder = Order.builder()
+                    .user(user)
+                    .state(PACKAGING)
+                    .deliveryAddress(dto.deliveryAddress())
+                    .build();
 
-        List<OrderProduct> orderProducts = new ArrayList<>();
+            Order order = orderRepository.save(newOrder);
 
-        for (var productDTO : dto.products()) {
-            Product product = productRepository.findById(productDTO.id()).orElseThrow(() ->
-                    new EntityNotFoundException("Order with id " + productDTO.id() + " not found")
-            );
-            orderProducts.add(
-                    new OrderProduct(
-                            new OrderProductKey(order.getId(), product.getId()),
-                            productDTO.amount(),
-                            order,
-                            product)
-            );
+            List<OrderProduct> orderProducts = new ArrayList<>();
+
+            for (var productDTO : dto.products()) {
+                Product product = productRepository.findById(productDTO.id()).orElseThrow(() ->
+                        new EntityNotFoundException("Order with id " + productDTO.id() + " not found")
+                );
+                orderProducts.add(
+                        new OrderProduct(
+                                new OrderProductKey(order.getId(), product.getId()),
+                                productDTO.amount(),
+                                order,
+                                product)
+                );
+            }
+
+            order.setProducts(orderProductRepository.saveAll(orderProducts));
+
+            OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
+
+            return response;
+        }else {
+            throw new NotEnoughProductException("There is not enough of products to create order");
         }
-
-        order.setProducts(orderProductRepository.saveAll(orderProducts));
-
-        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
-
-        return response;
     }
 
     @Override

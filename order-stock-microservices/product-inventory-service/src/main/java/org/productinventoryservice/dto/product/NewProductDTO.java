@@ -1,4 +1,6 @@
 package org.productinventoryservice.dto.product;
 
-public record NewProductDTO(String name, Integer price) {
+import org.productinventoryservice.dto.warehouse.WarehouseDTO;
+
+public record NewProductDTO(String name, Integer price, Integer amount, WarehouseDTO warehouse) {
 }

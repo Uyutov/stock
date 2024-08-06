@@ -4,6 +4,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.orderservice.entity.enums.OrderState;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ class OrderTest {
 
     static Validator validator;
 
-    private final String STATE = "ASSEMBLING";
+    private final OrderState STATE = OrderState.PACKAGING;
     private final String ADDRESS = "Golubeva";
     private final User USER = new User();
     private final List<OrderProduct> ORDER_PRODUCT = List.of(new OrderProduct());
@@ -33,7 +34,7 @@ class OrderTest {
 
     @Test
     public void emptyState() {
-        var order = new Order(-1L, "", ADDRESS, USER, ORDER_PRODUCT);
+        var order = new Order(-1L, null, ADDRESS, USER, ORDER_PRODUCT);
         var violations = validator.validate(order);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -45,17 +46,6 @@ class OrderTest {
     @Test
     public void nullState() {
         var order = new Order(-1L, null, ADDRESS, USER, ORDER_PRODUCT);
-        var violations = validator.validate(order);
-
-        String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
-
-        assertThat(violations.size()).isEqualTo(1);
-        assertThat(violationMessage).isEqualTo("Please provide order state");
-    }
-
-    @Test
-    public void stateWithSpaces() {
-        var order = new Order(-1L, "          ", ADDRESS, USER, ORDER_PRODUCT);
         var violations = validator.validate(order);
 
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
@@ -132,7 +122,7 @@ class OrderTest {
 
     @Test
     public void wrongOrderCreation() {
-        var order = new Order(-1L, "", null, null, List.of());
+        var order = new Order(-1L, null, null, null, List.of());
         var violations = validator.validate(order);
 
         List<String> violationMessages = violations.stream().map(violation -> violation.getMessage()).toList();

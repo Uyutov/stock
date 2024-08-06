@@ -41,7 +41,7 @@ class WarehouseProductTest {
         String violationMessage = violations.stream().map(violation -> violation.getMessage()).toList().get(0);
 
         assertThat(violations.size()).isEqualTo(1);
-        assertThat(violationMessage).isEqualTo("WarehouseProduct embedded id must be specified");
+        assertThat(violationMessage).isEqualTo("WarehouseProduct embedded productId must be specified");
     }
 
     @Test
@@ -97,7 +97,7 @@ class WarehouseProductTest {
 
         assertThat(violations.size()).isEqualTo(4);
         assertThat(violationMessages).contains(
-                "WarehouseProduct embedded id must be specified",
+                "WarehouseProduct embedded productId must be specified",
                 "Warehouse must be specified",
                 "Product must be specified",
                 "Amount should be positive"
