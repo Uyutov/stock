@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO addProduct(AddProductTransactionDTO dto) {
+    public ProductDTO addAmountToProduct(AddProductTransactionDTO dto) {
         Product product = productRepository.findById(dto.productId()).orElseThrow(() -> {
             return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + dto.productId());
         });
@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
             Integer stockAmount = product.get().getProductAmount().stream()
                     .mapToInt(productInWarehouse -> productInWarehouse.getAmount()).sum();
 
-            if (stockAmount > requestedProductAmount) return false;
+            if (stockAmount < requestedProductAmount) return false;
 
             for (var productInWarehouse : product.get().getProductAmount()) {
                 if (requestedProductAmount > productInWarehouse.getAmount()) {
