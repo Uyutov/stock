@@ -96,12 +96,12 @@ public class ProductServiceImpl implements ProductService {
             Optional<Product> product = productRepository.findById(request.productId());
             Integer requestedProductAmount = request.amount();
 
-            if (product.isEmpty()) {return false;}
+            if (product.isEmpty()) { return false; }
 
             Integer stockAmount = product.get().getProductAmount().stream()
                     .mapToInt(productInWarehouse -> productInWarehouse.getAmount()).sum();
 
-            if (stockAmount < requestedProductAmount) return false;
+            if (stockAmount < requestedProductAmount) { return false; }
 
             for (var productInWarehouse : product.get().getProductAmount()) {
                 if (requestedProductAmount > productInWarehouse.getAmount()) {
