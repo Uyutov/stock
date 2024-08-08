@@ -9,10 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.productinventoryservice.dto.product.AddProductTransactionDTO;
-import org.productinventoryservice.dto.product.NewProductDTO;
-import org.productinventoryservice.dto.product.ProductDTO;
-import org.productinventoryservice.dto.product.ProductSubtractionTransactionDTO;
+import org.productinventoryservice.dto.product.*;
 import org.productinventoryservice.dto.warehouse.WarehouseDTO;
 import org.productinventoryservice.entity.Product;
 import org.productinventoryservice.entity.Warehouse;
@@ -22,6 +19,7 @@ import org.productinventoryservice.mapper.ProductMapper;
 import org.productinventoryservice.repository.ProductRepository;
 import org.productinventoryservice.repository.WarehouseProductRepository;
 import org.productinventoryservice.service.interfaces.WarehouseService;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -109,6 +107,52 @@ class ProductServiceImplTest {
                 .build();
 
         bottle.setProductAmount(List.of(bottleInWarehouse));
+    }
+
+    @Test
+    void getProductById() {
+        ProductRequestDTO requestDTO = new ProductRequestDTO(1L);
+
+        ProductDTO dto = ProductDTO.builder()
+                .id(1L)
+                .name("Apple")
+                .price(5)
+                .build();
+
+        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(apple));
+        Mockito.when(productMapper.getDTOFromProduct(apple)).thenReturn(dto);
+
+        ProductDTO response = productService.getProductById(requestDTO);
+
+        assertThat(response).isEqualTo(dto);
+    }
+
+    @Test
+    void getProductPageById() {
+        Pageable pageable = PageRequest.of(0,2);
+
+        ProductDTO appleDTO = ProductDTO.builder()
+                .id(1L)
+                .name("Apple")
+                .price(5)
+                .build();
+
+        ProductDTO bottleDTO = ProductDTO.builder()
+                .id(2L)
+                .name("Bottle")
+                .price(10)
+                .build();
+
+        Page<Product> productPage = new PageImpl<>(List.of(apple, bottle));
+
+        Mockito.when(productRepository.findAll(pageable)).thenReturn(productPage);
+        Mockito.when(productMapper.getDTOFromProduct(apple)).thenReturn(appleDTO);
+        Mockito.when(productMapper.getDTOFromProduct(bottle)).thenReturn(bottleDTO);
+
+        Page<ProductDTO> response = productService.getProductsPage(pageable);
+
+        assertThat(response).contains(appleDTO);
+        assertThat(response).contains(bottleDTO);
     }
 
     @Test

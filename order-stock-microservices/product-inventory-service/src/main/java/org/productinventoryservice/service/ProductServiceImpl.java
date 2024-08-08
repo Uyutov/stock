@@ -14,6 +14,8 @@ import org.productinventoryservice.repository.ProductRepository;
 import org.productinventoryservice.repository.WarehouseProductRepository;
 import org.productinventoryservice.service.interfaces.ProductService;
 import org.productinventoryservice.service.interfaces.WarehouseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final String PRODUCT_ALREADY_EXIST_EXC = "Product already exists in this warehouse";
     private final String PRODUCT_NOT_FOUND_EXC = "Could not find product with id ";
     private final String PRODUCT_NOT_FOUND_IN_WAREHOUSE = "Could not found product with id %d in warehouse with id %d";
+
     public ProductServiceImpl(WarehouseService warehouseService,
                               ProductRepository productRepository,
                               WarehouseProductRepository warehouseProductRepository,
@@ -39,6 +42,24 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
         this.warehouseProductRepository = warehouseProductRepository;
         this.productMapper = productMapper;
+    }
+
+    @Override
+    public ProductDTO getProductById(ProductRequestDTO requestedProduct) {
+        Product product = productRepository.findById(requestedProduct.id()).orElseThrow(() -> {
+                    return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + requestedProduct.id());
+                }
+        );
+        return productMapper.getDTOFromProduct(product);
+    }
+
+    @Override
+    public Page<ProductDTO> getProductsPage(Pageable pageable) {
+        Page<Product> products = productRepository.findAll(pageable);
+        Page<ProductDTO> productDTOPage = products.map((product) -> {
+            return productMapper.getDTOFromProduct(product);
+        });
+        return productDTOPage;
     }
 
     @Override
@@ -81,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
         WarehouseProductKey warehouseProductKey = new WarehouseProductKey(dto.warehouseId(), dto.productId());
 
         WarehouseProduct productAmount = warehouseProductRepository.findById(warehouseProductKey).orElseThrow(() -> {
-            return new EntityNotFoundException(String.format(PRODUCT_NOT_FOUND_IN_WAREHOUSE, dto.productId(),dto.warehouseId())
+            return new EntityNotFoundException(String.format(PRODUCT_NOT_FOUND_IN_WAREHOUSE, dto.productId(), dto.warehouseId())
             );
         });
 
@@ -96,12 +117,16 @@ public class ProductServiceImpl implements ProductService {
             Optional<Product> product = productRepository.findById(request.productId());
             Integer requestedProductAmount = request.amount();
 
-            if (product.isEmpty()) { return false; }
+            if (product.isEmpty()) {
+                return false;
+            }
 
             Integer stockAmount = product.get().getProductAmount().stream()
                     .mapToInt(productInWarehouse -> productInWarehouse.getAmount()).sum();
 
-            if (stockAmount < requestedProductAmount) { return false; }
+            if (stockAmount < requestedProductAmount) {
+                return false;
+            }
 
             for (var productInWarehouse : product.get().getProductAmount()) {
                 if (requestedProductAmount > productInWarehouse.getAmount()) {
