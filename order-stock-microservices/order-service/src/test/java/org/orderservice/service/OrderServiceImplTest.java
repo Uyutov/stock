@@ -24,6 +24,9 @@ import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
 import org.orderservice.repository.OrderRepository;
 import org.orderservice.repository.ProductRepository;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,9 +53,11 @@ class OrderServiceImplTest {
     @Mock
     private OrderMapper orderMapper;
     @Mock
-    private ProductMapper productMapper;
-    @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+    @Mock DirectExchange exchange;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -67,6 +72,9 @@ class OrderServiceImplTest {
     private OrderResponseDTO orderResponse;
     private ProductResponseDTO appleProductResponse;
     private ProductResponseDTO bottleProductResponse;
+
+    @Value("${rabbitmq.exchange}")
+    private String exchangeName;
 
     @BeforeEach
     public void setUp() {
@@ -134,6 +142,8 @@ class OrderServiceImplTest {
                         bottleProductResponse
                 ))
                 .build();
+
+        exchange = new DirectExchange(exchangeName);
     }
 
     @Test
@@ -214,6 +224,8 @@ class OrderServiceImplTest {
         Mockito.when(orderProductRepository.saveAll(collectedProductsInOrder)).thenReturn(orderedProducts);
 
         Mockito.when(orderMapper.getResponseDtoFromOrder(order)).thenReturn(orderResponse);
+
+        Mockito.when(rabbitTemplate.convertSendAndReceive(exchange.getName(), orderCreationDTO.products())).thenReturn(true);
 
         OrderResponseDTO response = orderService.createOrder(orderCreationDTO, jwt);
 
