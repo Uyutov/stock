@@ -69,9 +69,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO getOrder(OrderRequestDTO dto) {
-        Order order = orderRepository.findById(dto.id()).orElseThrow(() -> {
-            return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, dto.id()));
+    public OrderResponseDTO getOrder(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> {
+            return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, id));
         });
 
         OrderResponseDTO orderResponse = orderMapper.getResponseDtoFromOrder(order);
@@ -131,22 +131,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO changeOrderStatus(OrderStatusChangeDTO dto) {
-        Order order = orderRepository.findById(dto.id()).orElseThrow(() -> {
-                    return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, dto.id()));
+    public OrderResponseDTO changeOrderStatus(Long id, OrderState state) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> {
+                    return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, id));
                 }
         );
 
         try {
-            OrderState state = OrderState.valueOf(dto.status());
-
             order.setState(state);
             OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
 
             return response;
         }catch (IllegalArgumentException exception)
         {
-            throw new WrongOrderStateException(String.format(WRONG_ORDER_STATUS, dto.status()));
+            throw new WrongOrderStateException(String.format(WRONG_ORDER_STATUS, state));
         }
     }
 }

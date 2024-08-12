@@ -111,7 +111,7 @@ class ProductServiceImplTest {
 
     @Test
     void getProductById() {
-        ProductRequestDTO requestDTO = new ProductRequestDTO(1L);
+        Long id = 1L;
 
         ProductDTO dto = ProductDTO.builder()
                 .id(1L)
@@ -119,10 +119,10 @@ class ProductServiceImplTest {
                 .price(5)
                 .build();
 
-        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(apple));
+        Mockito.when(productRepository.findById(id)).thenReturn(Optional.of(apple));
         Mockito.when(productMapper.getDTOFromProduct(apple)).thenReturn(dto);
 
-        ProductDTO response = productService.getProductById(requestDTO);
+        ProductDTO response = productService.getProductById(id);
 
         assertThat(response).isEqualTo(dto);
     }

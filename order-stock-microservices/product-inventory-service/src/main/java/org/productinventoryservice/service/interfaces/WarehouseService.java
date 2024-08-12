@@ -7,7 +7,8 @@ import org.productinventoryservice.entity.Warehouse;
 
 public interface WarehouseService {
     public Warehouse getWarehouseById(Long id);
-    public WarehouseDTO getWarehouseDTOById(WarehouseRequestDTO dto);
+    public WarehouseDTO getWarehouseDTOById(Long id);
     public WarehouseDTO createWarehouse(NewWarehouseDTO dto);
     public WarehouseDTO updateWarehouse(WarehouseDTO dto);
+    public void deleteWarehouse(Long id);
 }

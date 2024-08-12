@@ -4,6 +4,7 @@ import org.orderservice.dto.order.OrderCreationDTO;
 import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
 import org.orderservice.dto.order.OrderStatusChangeDTO;
+import org.orderservice.entity.enums.OrderState;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +23,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<OrderResponseDTO> getOrderById(OrderRequestDTO dto) {
-        return ResponseEntity.ok(orderService.getOrder(dto));
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(orderService.getOrder(id));
     }
 
     @GetMapping("/page")
@@ -32,24 +33,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersPage(pageable));
     }
 
-    @PostMapping("/create-order")
+    @PostMapping("/{id}/create-order")
     public ResponseEntity<Object> createOrder(OrderCreationDTO dto, @AuthenticationPrincipal Jwt jwt)
     {
         return new ResponseEntity<>(orderService.createOrder(dto, jwt), HttpStatusCode.valueOf(201));
     }
 
-    @PutMapping("/order-packaged")
-    public ResponseEntity<OrderResponseDTO> packageOrder(OrderStatusChangeDTO dto){
-        return ResponseEntity.ok(orderService.changeOrderStatus(dto));
-    };
-
-    @PutMapping("/order-delivered")
-    public ResponseEntity<OrderResponseDTO> deliveredOrder(OrderStatusChangeDTO dto){
-        return ResponseEntity.ok(orderService.changeOrderStatus(dto));
-    };
-
-    @PutMapping("/order-received")
-    public ResponseEntity<OrderResponseDTO> orderReceived(OrderStatusChangeDTO dto){
-        return ResponseEntity.ok(orderService.changeOrderStatus(dto));
+    @PutMapping("/{id}/change-state")
+    public ResponseEntity<OrderResponseDTO> packageOrder(@PathVariable("id") Long id){
+        return ResponseEntity.ok(orderService.changeOrderStatus(id, OrderState.DELIVERING));
     };
 }

@@ -18,22 +18,28 @@ public class WarehouseController {
         this.warehouseService = warehouseService;
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<WarehouseDTO> getWarehouseById(WarehouseRequestDTO dto)
+    @GetMapping("/{id}")
+    public ResponseEntity<WarehouseDTO> getWarehouseById(@PathVariable("id") Long id)
     {
-        return ResponseEntity.ok(warehouseService.getWarehouseDTOById(dto));
+        return ResponseEntity.ok(warehouseService.getWarehouseDTOById(id));
     }
 
-    @PostMapping("/create-warehouse")
+    @PostMapping("/create")
     public ResponseEntity<WarehouseDTO> createWarehouse(NewWarehouseDTO dto)
     {
         return new ResponseEntity<>(warehouseService.createWarehouse(dto), HttpStatusCode.valueOf(201));
     }
 
-    @PatchMapping("/update-warehouse")
+    @PatchMapping("/update")
     public ResponseEntity<WarehouseDTO> updateWarehouse(WarehouseDTO dto)
     {
         return new ResponseEntity(warehouseService.updateWarehouse(dto), HttpStatusCode.valueOf(200));
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Object> deleteWarehouse(@PathVariable("id") Long id)
+    {
+        warehouseService.deleteWarehouse(id);
+        return ResponseEntity.ok().build();
+    }
 }

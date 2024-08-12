@@ -150,12 +150,12 @@ class OrderServiceImplTest {
 
     @Test
     void getOrder() {
-        OrderRequestDTO requestDTO = new OrderRequestDTO(1L);
+        Long id = 1L;
 
-        Mockito.when(orderRepository.findById(requestDTO.id())).thenReturn(Optional.of(order));
+        Mockito.when(orderRepository.findById(id)).thenReturn(Optional.of(order));
         Mockito.when(orderMapper.getResponseDtoFromOrder(order)).thenReturn(orderResponse);
 
-        OrderResponseDTO response = orderService.getOrder(requestDTO);
+        OrderResponseDTO response = orderService.getOrder(id);
 
         assertThat(response).isEqualTo(orderResponse);
     }
@@ -238,7 +238,8 @@ class OrderServiceImplTest {
 
     @Test
     void changeOrderStatus() {
-        OrderStatusChangeDTO changeDTO = new OrderStatusChangeDTO(1L, OrderState.DELIVERING.toString());
+        Long id = 1L;
+        OrderState state = OrderState.DELIVERING;
 
         Order orderWithNewState = Order.builder()
                 .id(order.getId())
@@ -255,11 +256,11 @@ class OrderServiceImplTest {
                 .products(orderResponse.products())
                 .build();
 
-        Mockito.when(orderRepository.findById(changeDTO.id())).thenReturn(Optional.of(order));
+        Mockito.when(orderRepository.findById(id)).thenReturn(Optional.of(order));
         Mockito.when(orderRepository.save(orderWithNewState)).thenReturn(orderWithNewState);
         Mockito.when(orderMapper.getResponseDtoFromOrder(orderWithNewState)).thenReturn(orderResponseWithNewState);
 
-        OrderResponseDTO response = orderService.changeOrderStatus(changeDTO);
+        OrderResponseDTO response = orderService.changeOrderStatus(id, state);
 
         assertThat(response).isEqualTo(orderResponseWithNewState);
         assertThat(response.state()).isEqualTo(OrderState.DELIVERING.toString());

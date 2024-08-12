@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 public interface OrderService {
-    public OrderResponseDTO getOrder(OrderRequestDTO dto);
+    public OrderResponseDTO getOrder(Long id);
     public Page<OrderResponseDTO> getOrdersPage(Pageable pageable);
     public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt);
-    public OrderResponseDTO changeOrderStatus(OrderStatusChangeDTO dto);
+    public OrderResponseDTO changeOrderStatus(Long id, OrderState state);
 }

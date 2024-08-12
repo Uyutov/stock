@@ -20,9 +20,9 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<ProductDTO> getProductById(ProductRequestDTO dto) {
-        return ResponseEntity.ok(productService.getProductById(dto));
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @GetMapping("/product-page")

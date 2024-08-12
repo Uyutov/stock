@@ -45,9 +45,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO getProductById(ProductRequestDTO requestedProduct) {
-        Product product = productRepository.findById(requestedProduct.id()).orElseThrow(() -> {
-                    return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + requestedProduct.id());
+    public ProductDTO getProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> {
+                    return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + id);
                 }
         );
         return productMapper.getDTOFromProduct(product);
@@ -94,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDTO addAmountToProduct(AddProductTransactionDTO dto) {
         Product product = productRepository.findById(dto.productId()).orElseThrow(() -> {
             return new EntityNotFoundException(PRODUCT_NOT_FOUND_EXC + dto.productId());

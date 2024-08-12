@@ -38,9 +38,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WarehouseDTO getWarehouseDTOById(WarehouseRequestDTO dto) {
-        Warehouse warehouse = warehouseRepository.findById(dto.id()).orElseThrow(() -> {
-            return new EntityNotFoundException(WAREHOUSE_NOT_FOUND_EXC + dto.id());
+    public WarehouseDTO getWarehouseDTOById(Long id) {
+        Warehouse warehouse = warehouseRepository.findById(id).orElseThrow(() -> {
+            return new EntityNotFoundException(WAREHOUSE_NOT_FOUND_EXC + id);
         });
 
         return warehouseMapper.getDTOFromWarehouse(warehouse);
@@ -68,5 +68,10 @@ public class WarehouseServiceImpl implements WarehouseService {
         Warehouse updatedWarehouse = warehouseRepository.save(warehouse);
 
         return warehouseMapper.getDTOFromWarehouse(updatedWarehouse);
+    }
+
+    @Override
+    public void deleteWarehouse(Long id) {
+        warehouseRepository.deleteById(id);
     }
 }

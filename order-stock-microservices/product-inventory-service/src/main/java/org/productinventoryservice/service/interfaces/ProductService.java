@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ProductService {
-    public ProductDTO getProductById(ProductRequestDTO requestedProduct);
+    public ProductDTO getProductById(Long id);
     public Page<ProductDTO> getProductsPage(Pageable pageable);
     public ProductDTO createProduct(NewProductDTO dto);
     public ProductDTO addAmountToProduct(AddProductTransactionDTO dto);
