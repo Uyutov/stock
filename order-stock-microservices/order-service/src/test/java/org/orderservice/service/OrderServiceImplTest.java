@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.orderservice.dto.order.OrderCreationDTO;
+import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
+import org.orderservice.dto.order.OrderStatusChangeDTO;
 import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.dto.product.ProductTransactionDTO;
 import org.orderservice.dto.user.UserDTO;
@@ -148,12 +150,12 @@ class OrderServiceImplTest {
 
     @Test
     void getOrder() {
-        Long orderId = 1L;
+        Long id = 1L;
 
-        Mockito.when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        Mockito.when(orderRepository.findById(id)).thenReturn(Optional.of(order));
         Mockito.when(orderMapper.getResponseDtoFromOrder(order)).thenReturn(orderResponse);
 
-        OrderResponseDTO response = orderService.getOrder(orderId);
+        OrderResponseDTO response = orderService.getOrder(id);
 
         assertThat(response).isEqualTo(orderResponse);
     }
@@ -180,9 +182,10 @@ class OrderServiceImplTest {
 
     @Test
     void createOrder() {
-        Jwt jwt = Jwt.withTokenValue("token")
+        /*Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "none")
-                .claim("username", "Vladimir").build();
+                .claim("username", "Vladimir").build();*/
+        String username = "Vladimir";
 
         ProductTransactionDTO requestedApple = new ProductTransactionDTO(1L, 5);
         ProductTransactionDTO requestedBottle = new ProductTransactionDTO(2L, 10);
@@ -213,7 +216,7 @@ class OrderServiceImplTest {
         List<OrderProduct> collectedProductsInOrder = List.of(orderedApple, orderedBottle);
 
 
-        Mockito.when(userService.loadUserByUsername(jwt.getClaim("username"))).thenReturn(userDTO);
+        Mockito.when(userService.loadUserByUsername(username)).thenReturn(userDTO);
         Mockito.when(userMapper.getUserFromDTO(userDTO)).thenReturn(user);
 
         Mockito.when(orderRepository.save(newOrder)).thenReturn(order);
@@ -227,7 +230,7 @@ class OrderServiceImplTest {
 
         Mockito.when(rabbitTemplate.convertSendAndReceive(exchange.getName(), orderCreationDTO.products())).thenReturn(true);
 
-        OrderResponseDTO response = orderService.createOrder(orderCreationDTO, jwt);
+        OrderResponseDTO response = orderService.createOrder(orderCreationDTO, username);
 
         assertThat(response).isEqualTo(orderResponse);
         assertThat(response.products()).contains(appleProductResponse);
@@ -236,15 +239,15 @@ class OrderServiceImplTest {
 
     @Test
     void changeOrderStatus() {
-        Long orderId = 1L;
-        OrderState newState = OrderState.DELIVERING;
+        Long id = 1L;
+        OrderState state = OrderState.DELIVERING;
 
         Order orderWithNewState = Order.builder()
                 .id(order.getId())
                 .deliveryAddress(order.getDeliveryAddress())
                 .products(order.getProducts())
                 .user(order.getUser())
-                .state(newState)
+                .state(OrderState.DELIVERING)
                 .build();
 
         OrderResponseDTO orderResponseWithNewState = OrderResponseDTO.builder()
@@ -254,13 +257,13 @@ class OrderServiceImplTest {
                 .products(orderResponse.products())
                 .build();
 
-        Mockito.when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        Mockito.when(orderRepository.findById(id)).thenReturn(Optional.of(order));
         Mockito.when(orderRepository.save(orderWithNewState)).thenReturn(orderWithNewState);
         Mockito.when(orderMapper.getResponseDtoFromOrder(orderWithNewState)).thenReturn(orderResponseWithNewState);
 
-        OrderResponseDTO response = orderService.changeOrderStatus(orderId, newState);
+        OrderResponseDTO response = orderService.changeOrderStatus(id, state);
 
         assertThat(response).isEqualTo(orderResponseWithNewState);
-        assertThat(response.state()).isEqualTo(newState.toString());
+        assertThat(response.state()).isEqualTo(OrderState.DELIVERING.toString());
     }
 }

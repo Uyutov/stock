@@ -2,7 +2,9 @@ package org.orderservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.orderservice.dto.order.OrderCreationDTO;
+import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
+import org.orderservice.dto.order.OrderStatusChangeDTO;
 import org.orderservice.dto.user.UserDTO;
 import org.orderservice.entity.Order;
 import org.orderservice.entity.OrderProduct;
@@ -11,6 +13,7 @@ import org.orderservice.entity.User;
 import org.orderservice.entity.composite_key.OrderProductKey;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.exception.NotEnoughProductException;
+import org.orderservice.exception.WrongOrderStateException;
 import org.orderservice.mapper.OrderMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
@@ -23,10 +26,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -42,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderState PACKAGING = OrderState.PACKAGING;
 
+    private final String ORDER_NOT_FOUND_EXC = "Order with id %d not found";
+    private final String NOT_ENOUGH_PRODUCT_EXC = "There is not enough of products to create order";
+    private final String WRONG_ORDER_STATUS = "Wrong order status: %s";
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
                             OrderProductRepository orderProductRepository,
@@ -63,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDTO getOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> {
-            return new EntityNotFoundException("Order with id " + id + " not found");
+            return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, id));
         });
 
         OrderResponseDTO orderResponse = orderMapper.getResponseDtoFromOrder(order);
@@ -81,8 +89,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt) {
-        UserDTO userDTO = (UserDTO) userService.loadUserByUsername(jwt.getClaim("username"));
+    public OrderResponseDTO createOrder(OrderCreationDTO dto, String username) {
+        UserDTO userDTO = (UserDTO) userService.loadUserByUsername(username);
 
         User user = userMapper.getUserFromDTO(userDTO);
 
@@ -101,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
 
             for (var productDTO : dto.products()) {
                 Product product = productRepository.findById(productDTO.id()).orElseThrow(() ->
-                        new EntityNotFoundException("Order with id " + productDTO.id() + " not found")
+                        new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, productDTO.id()))
                 );
                 orderProducts.add(
                         new OrderProduct(
@@ -118,20 +126,25 @@ public class OrderServiceImpl implements OrderService {
 
             return response;
         }else {
-            throw new NotEnoughProductException("There is not enough of products to create order");
+            throw new NotEnoughProductException(NOT_ENOUGH_PRODUCT_EXC);
         }
     }
 
     @Override
     public OrderResponseDTO changeOrderStatus(Long id, OrderState state) {
         Order order = orderRepository.findById(id).orElseThrow(() -> {
-                    return new EntityNotFoundException("Order with id " + id + " not found");
+                    return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, id));
                 }
         );
 
-        order.setState(state);
-        OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
+        try {
+            order.setState(state);
+            OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
 
-        return response;
+            return response;
+        }catch (IllegalArgumentException exception)
+        {
+            throw new WrongOrderStateException(String.format(WRONG_ORDER_STATUS, state));
+        }
     }
 }

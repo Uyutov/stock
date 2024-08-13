@@ -3,9 +3,11 @@ package org.orderservice.mapper;
 import org.orderservice.dto.order.OrderResponseDTO;
 import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.entity.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class OrderMapper {
     private final ProductMapper productMapper;
 
