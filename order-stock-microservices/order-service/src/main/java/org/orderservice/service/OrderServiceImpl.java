@@ -89,8 +89,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO createOrder(OrderCreationDTO dto, Jwt jwt) {
-        UserDTO userDTO = (UserDTO) userService.loadUserByUsername(jwt.getClaim("username"));
+    public OrderResponseDTO createOrder(OrderCreationDTO dto, String username) {
+        UserDTO userDTO = (UserDTO) userService.loadUserByUsername(username);
 
         User user = userMapper.getUserFromDTO(userDTO);
 

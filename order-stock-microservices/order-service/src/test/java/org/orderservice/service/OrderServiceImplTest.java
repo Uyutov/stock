@@ -182,9 +182,10 @@ class OrderServiceImplTest {
 
     @Test
     void createOrder() {
-        Jwt jwt = Jwt.withTokenValue("token")
+        /*Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "none")
-                .claim("username", "Vladimir").build();
+                .claim("username", "Vladimir").build();*/
+        String username = "Vladimir";
 
         ProductTransactionDTO requestedApple = new ProductTransactionDTO(1L, 5);
         ProductTransactionDTO requestedBottle = new ProductTransactionDTO(2L, 10);
@@ -215,7 +216,7 @@ class OrderServiceImplTest {
         List<OrderProduct> collectedProductsInOrder = List.of(orderedApple, orderedBottle);
 
 
-        Mockito.when(userService.loadUserByUsername(jwt.getClaim("username"))).thenReturn(userDTO);
+        Mockito.when(userService.loadUserByUsername(username)).thenReturn(userDTO);
         Mockito.when(userMapper.getUserFromDTO(userDTO)).thenReturn(user);
 
         Mockito.when(orderRepository.save(newOrder)).thenReturn(order);
@@ -229,7 +230,7 @@ class OrderServiceImplTest {
 
         Mockito.when(rabbitTemplate.convertSendAndReceive(exchange.getName(), orderCreationDTO.products())).thenReturn(true);
 
-        OrderResponseDTO response = orderService.createOrder(orderCreationDTO, jwt);
+        OrderResponseDTO response = orderService.createOrder(orderCreationDTO, username);
 
         assertThat(response).isEqualTo(orderResponse);
         assertThat(response.products()).contains(appleProductResponse);

@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -33,10 +35,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersPage(pageable));
     }
 
-    @PostMapping("/{id}/create-order")
-    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, @AuthenticationPrincipal Jwt jwt)
+    @PostMapping("/create-order")
+    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, Principal principal)
     {
-        return new ResponseEntity<>(orderService.createOrder(dto, jwt), HttpStatusCode.valueOf(201));
+        return new ResponseEntity<>(orderService.createOrder(dto, principal.getName()), HttpStatusCode.valueOf(201));
     }
 
     @PutMapping("/{id}/change-state")
