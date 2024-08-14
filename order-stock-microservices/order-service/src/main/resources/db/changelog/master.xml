@@ -6,5 +6,6 @@
 
     <include file="db/changelog/scripts/001-creating-schema.sql"></include>
     <include file="db/changelog/scripts/002-create-initial-tables.sql"></include>
+    <include file="db/changelog/scripts/003-creating-and-adding-order-state-enum.sql"></include>
 
 </databaseChangeLog>

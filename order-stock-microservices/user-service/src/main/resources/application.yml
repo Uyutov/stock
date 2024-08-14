@@ -12,4 +12,4 @@ keycloak:
   realm: "innowise"
   adminClientId: "admin-cli"
   authClientId: "innowise-task3-auth"
-  adminClientSecret: "aLKwUqiRqcHUvfPK5spAC9FqkrXB5B5J"
+  adminClientSecret: "qfPInrtMcYOWjLIWchXtBcXk4P0uRcCX"

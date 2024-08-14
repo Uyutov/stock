@@ -36,9 +36,10 @@ public class OrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, Principal principal)
+    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, @AuthenticationPrincipal Jwt jwt)
     {
-        return new ResponseEntity<>(orderService.createOrder(dto, principal.getName()), HttpStatusCode.valueOf(201));
+        OrderResponseDTO preferredUsername = orderService.createOrder(dto, jwt.getClaim("preferred_username"));
+        return new ResponseEntity<>(preferredUsername, HttpStatusCode.valueOf(201));
     }
 
     @PutMapping("/{id}/change-state")
