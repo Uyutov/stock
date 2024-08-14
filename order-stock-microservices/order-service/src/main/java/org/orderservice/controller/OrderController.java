@@ -36,9 +36,9 @@ public class OrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, @AuthenticationPrincipal Jwt jwt)
+    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, Principal principal)
     {
-        OrderResponseDTO preferredUsername = orderService.createOrder(dto, jwt.getClaim("preferred_username"));
+        OrderResponseDTO preferredUsername = orderService.createOrder(dto, principal.getName());
         return new ResponseEntity<>(preferredUsername, HttpStatusCode.valueOf(201));
     }
 
