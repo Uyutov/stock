@@ -8,9 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.orderservice.dto.order.OrderCreationDTO;
-import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
-import org.orderservice.dto.order.OrderStatusChangeDTO;
 import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.dto.product.ProductTransactionDTO;
 import org.orderservice.dto.user.UserDTO;
@@ -21,7 +19,6 @@ import org.orderservice.entity.User;
 import org.orderservice.entity.composite_key.OrderProductKey;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.mapper.OrderMapper;
-import org.orderservice.mapper.ProductMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
 import org.orderservice.repository.OrderRepository;
@@ -33,9 +30,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.jwt.Jwt;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +59,8 @@ class OrderServiceImplTest {
 
     @Mock
     private RabbitTemplate rabbitTemplate;
-    @Mock DirectExchange exchange;
+    @Mock
+    DirectExchange exchange;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -146,6 +147,10 @@ class OrderServiceImplTest {
                 .build();
 
         exchange = new DirectExchange(exchangeName);
+
+        Principal principal = () -> user.getUsername();
+        Authentication auth = new UsernamePasswordAuthenticationToken(principal, null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     @Test
@@ -182,9 +187,6 @@ class OrderServiceImplTest {
 
     @Test
     void createOrder() {
-        /*Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claim("username", "Vladimir").build();*/
         String username = "Vladimir";
 
         ProductTransactionDTO requestedApple = new ProductTransactionDTO(1L, 5);
@@ -215,7 +217,6 @@ class OrderServiceImplTest {
         );
         List<OrderProduct> collectedProductsInOrder = List.of(orderedApple, orderedBottle);
 
-
         Mockito.when(userService.loadUserByUsername(username)).thenReturn(userDTO);
         Mockito.when(userMapper.getUserFromDTO(userDTO)).thenReturn(user);
 
@@ -230,7 +231,7 @@ class OrderServiceImplTest {
 
         Mockito.when(rabbitTemplate.convertSendAndReceive(exchange.getName(), orderCreationDTO.products())).thenReturn(true);
 
-        OrderResponseDTO response = orderService.createOrder(orderCreationDTO, username);
+        OrderResponseDTO response = orderService.createOrder(orderCreationDTO);
 
         assertThat(response).isEqualTo(orderResponse);
         assertThat(response.products()).contains(appleProductResponse);

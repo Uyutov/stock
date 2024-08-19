@@ -1,17 +1,13 @@
 package org.orderservice.controller;
 
 import org.orderservice.dto.order.OrderCreationDTO;
-import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
-import org.orderservice.dto.order.OrderStatusChangeDTO;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -36,9 +32,9 @@ public class OrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<Object> createOrder(OrderCreationDTO dto, Principal principal)
+    public ResponseEntity<Object> createOrder(OrderCreationDTO dto)
     {
-        return new ResponseEntity<>(orderService.createOrder(dto, principal.getName()), HttpStatusCode.valueOf(201));
+        return new ResponseEntity<>(orderService.createOrder(dto), HttpStatusCode.valueOf(201));
     }
 
     @PutMapping("/{id}/change-state")

@@ -12,6 +12,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 public interface OrderService {
     public OrderResponseDTO getOrder(Long id);
     public Page<OrderResponseDTO> getOrdersPage(Pageable pageable);
-    public OrderResponseDTO createOrder(OrderCreationDTO dto, String username);
+    public OrderResponseDTO createOrder(OrderCreationDTO dto);
     public OrderResponseDTO changeOrderStatus(Long id, OrderState state);
 }

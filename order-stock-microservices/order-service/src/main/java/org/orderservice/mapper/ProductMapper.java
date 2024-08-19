@@ -3,7 +3,9 @@ package org.orderservice.mapper;
 import org.orderservice.dto.product.ProductResponseDTO;
 import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductMapper {
     public ProductResponseDTO getProductResponseFromOrderProduct(OrderProduct orderProduct)
     {

@@ -45,6 +45,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
         credentials.setType(CredentialRepresentation.PASSWORD);
 
         user.setCredentials(List.of(credentials));
+        user.setGroups(List.of("USER"));
 
         RealmResource realm = adminKeycloak.realm("innowise");
         UsersResource usersResource = realm.users();
