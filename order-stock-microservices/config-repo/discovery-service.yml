@@ -1,11 +1,6 @@
 server:
-  port: 8000
-spring:
-  application:
-    name: discovery-service
+  port: 8001
 eureka:
-  instance:
-    hostname: localhost
   client:
     register-with-eureka: false
     fetch-registry: false

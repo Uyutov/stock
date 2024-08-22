@@ -1,10 +1,16 @@
-spring:
-  application:
-    name: user-service
 server:
-  port: 8002
+  port : 8005
 
 eureka:
+  instance:
+    hostname: localhost
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://localhost:8001/eureka/
+
+keycloak:
+  serverUrl: "http://localhost:9090"
+  realm: "innowise"
+  adminClientId: "admin-cli"
+  authClientId: "innowise-task3-auth"
+  adminClientSecret: "qfPInrtMcYOWjLIWchXtBcXk4P0uRcCX"
