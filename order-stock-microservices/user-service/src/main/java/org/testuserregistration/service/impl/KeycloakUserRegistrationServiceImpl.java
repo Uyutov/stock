@@ -4,6 +4,7 @@ import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.*;
 import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +59,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
     }
 
     @Override
-    public ResponseEntity<AccessTokenResponse> loginUser(LoginDTO loginDTO) {
+    public AccessTokenResponse loginUser(LoginDTO loginDTO) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -80,11 +81,12 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
                         entity,
                         AccessTokenResponse.class
                 );
-        return response;
+        HttpHeaders headers1 = response.getHeaders();
+        return response.getBody();
     }
 
     @Override
-    public ResponseEntity<AccessTokenResponse> refreshToken(RefreshTokenDTO refreshTokenDTO) {
+    public AccessTokenResponse refreshToken(RefreshTokenDTO refreshTokenDTO) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -105,7 +107,7 @@ public class KeycloakUserRegistrationServiceImpl implements KeycloakUserRegistra
                         entity,
                         AccessTokenResponse.class
                 );
-        return response;
+        return response.getBody();
     }
 
 }

@@ -262,7 +262,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.save(orderWithNewState)).thenReturn(orderWithNewState);
         Mockito.when(orderMapper.getResponseDtoFromOrder(orderWithNewState)).thenReturn(orderResponseWithNewState);
 
-        OrderResponseDTO response = orderService.changeOrderStatus(id, state);
+        OrderResponseDTO response = orderService.changeOrderStatus(id);
 
         assertThat(response).isEqualTo(orderResponseWithNewState);
         assertThat(response.state()).isEqualTo(OrderState.DELIVERING.toString());

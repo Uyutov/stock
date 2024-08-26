@@ -2,12 +2,14 @@ package org.orderservice.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.orderservice.entity.enums.OrderState;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class Order {
 
     @NotNull(message = "Please provide order state")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private OrderState state;
     @NotBlank(message = "Please provide delivery address for order")
     private String deliveryAddress;
@@ -35,7 +38,6 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @NotEmpty(message = "Order should contain at least one product")
     @OneToMany(mappedBy = "order")
     List<OrderProduct> products;
 }

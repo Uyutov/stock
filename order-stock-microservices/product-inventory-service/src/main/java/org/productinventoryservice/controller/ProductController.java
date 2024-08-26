@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/product")
+@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class ProductController {
 
     private final ProductService productService;
@@ -31,22 +32,22 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ProductDTO> createProduct(NewProductDTO dto) {
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody NewProductDTO dto) {
         return new ResponseEntity<>(productService.createProduct(dto), HttpStatusCode.valueOf(201));
     }
 
     @PatchMapping("/add-to-product")
-    public ResponseEntity<ProductDTO> addProductAmount(AddProductTransactionDTO dto) {
+    public ResponseEntity<ProductDTO> addProductAmount(@RequestBody AddProductTransactionDTO dto) {
         return new ResponseEntity<>(productService.addAmountToProduct(dto), HttpStatusCode.valueOf(200));
     }
 
     @PatchMapping("/update-product")
-    public ResponseEntity<ProductDTO> updateProduct(ProductDTO dto) {
+    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO dto) {
         return new ResponseEntity<>(productService.updateProduct(dto), HttpStatusCode.valueOf(200));
     }
 
     @DeleteMapping("/delete-product")
-    public ResponseEntity<Object> deleteProduct(DeleteProductDTO dto) {
+    public ResponseEntity<Object> deleteProduct(@RequestBody DeleteProductDTO dto) {
         productService.deleteProduct(dto);
         return ResponseEntity.status(200).build();
     }

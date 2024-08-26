@@ -2,6 +2,7 @@ package org.orderservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,8 +28,8 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/order/{id}/change-state").hasAnyRole("PACKER", "DELIVERY", "PICKUP_MANAGER")
-                            .requestMatchers("/order/**").hasRole("USER")
-                            .anyRequest().denyAll();
+                            .requestMatchers("/order/**").hasRole("USER");
+                            //.anyRequest().denyAll();
                 })
                 .build();
     }

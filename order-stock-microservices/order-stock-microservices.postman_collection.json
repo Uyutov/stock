@@ -1,0 +1,867 @@
+{
+	"info": {
+		"_postman_id": "6bc67fb0-7f19-47bf-a114-ff35129e4f03",
+		"name": "innowise",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28966229"
+	},
+	"item": [
+		{
+			"name": "order stock microservices",
+			"item": [
+				{
+					"name": "user service",
+					"item": [
+						{
+							"name": "packer",
+							"item": [
+								{
+									"name": "login packer",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jwt = pm.response.json();\r",
+													"\r",
+													"pm.collectionVariables.set(\"access_token\", jwt.access_token);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"packer\",\r\n    \"password\" : \"packer\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "delivery",
+							"item": [
+								{
+									"name": "login delivery",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jwt = pm.response.json();\r",
+													"\r",
+													"pm.collectionVariables.set(\"access_token\", jwt.access_token);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"delivery\",\r\n    \"password\" : \"delivery\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "pickup manager",
+							"item": [
+								{
+									"name": "login pickup manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jwt = pm.response.json();\r",
+													"\r",
+													"pm.collectionVariables.set(\"access_token\", jwt.access_token);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"pickup_manager\",\r\n    \"password\" : \"pickup_manager\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "storekeeper",
+							"item": [
+								{
+									"name": "login",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jwt = pm.response.json();\r",
+													"\r",
+													"pm.collectionVariables.set(\"access_token\", jwt.access_token);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"storekeeper\",\r\n    \"password\" : \"storekeeper\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "user",
+							"item": [
+								{
+									"name": "register user",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"testReg\",\r\n    \"password\": \"test\",\r\n    \"email\":\"testReg@gmail.com\",\r\n    \"firstName\":\"test\",\r\n    \"lastName\": \"Registration\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "login user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jwt = pm.response.json();\r",
+													"\r",
+													"pm.collectionVariables.set(\"access_token\", jwt.access_token);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"testReg\",\r\n    \"password\" : \"test\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "refresh token",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhM2UxMWI3Mi0zOTBmLTRjMTItOGQ5MC04ZWMwMDMxYzFhYWQifQ.eyJleHAiOjE3MjQwNzQxMjQsImlhdCI6MTcyNDA3MjMyNCwianRpIjoiMWE2NDY1OTAtNDQ3NS00YWQ2LTk2NjYtYzc4MDBiYWM0ZGJhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDkwL3JlYWxtcy9pbm5vd2lzZSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9yZWFsbXMvaW5ub3dpc2UiLCJzdWIiOiJlMGFkNzMzNi0wNzllLTQ4OWItYTY5Yi1lMWVjOTk4ODM0NjIiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiaW5ub3dpc2UtdGFzazMtYXV0aCIsInNpZCI6IjQ5NmRjODFiLWIwNmItNDZkNS1hYzE4LWQzN2VkZjdlMzg2ZCIsInNjb3BlIjoid2ViLW9yaWdpbnMgYWNyIGJhc2ljIHJvbGVzIGVtYWlsIHByb2ZpbGUifQ.b45W2HfDzfnltXlDXwds_3akce1xHxx21XDiJas_Uk45i5lF40v56c720R2muFn-bAddlQt5YXUH1irhAL3ejw\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8000/users/refresh",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8000",
+											"path": [
+												"users",
+												"refresh"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "order service",
+					"item": [
+						{
+							"name": "create order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"deliveryAddress\": \"Golubeva\",\r\n    \"products\":[\r\n        {\r\n            \"id\": 7,\r\n            \"amount\": 10\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8002/order/create-order",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8002",
+									"path": [
+										"order",
+										"create-order"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8002/order/22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8002",
+									"path": [
+										"order",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get orders page",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8002/order/page",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8002",
+									"path": [
+										"order",
+										"page"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "change order state",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8002/order/22/change-state",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8002",
+									"path": [
+										"order",
+										"22",
+										"change-state"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product_service",
+					"item": [
+						{
+							"name": "warehouse",
+							"item": [
+								{
+									"name": "create warehouse",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"address\": \"Gazeti\",\r\n    \"name\": \"OZON\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/warehouse/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"warehouse",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get warehouse",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8003/warehouse/12",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"warehouse",
+												"12"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update warehouse",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\":12,\r\n    \"address\": \"Gazeti 122\",\r\n    \"name\": \"Cool OZON\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/warehouse/update",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"warehouse",
+												"update"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete warehouse",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8003/warehouse/12/delete",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"warehouse",
+												"12",
+												"delete"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "product",
+							"item": [
+								{
+									"name": "create product",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"Apple\",\r\n    \"price\": 5,\r\n    \"amount\": 100,\r\n    \"warehouse\":{\r\n        \"id\": 7,\r\n        \"address\": \"Golubeva\",\r\n        \"name\": \"Wildberries\"\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/product/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get product page",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8003/product/product-page",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"product-page"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get product",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8003/product/12",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"12"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "add product amount",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"productId\": 7,\r\n    \"warehouseId\": 7,\r\n    \"amount\": 100\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/product/add-to-product",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"add-to-product"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update product",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": 7,\r\n    \"name\": \"Red Apple\",\r\n    \"price\": 50\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/product/update-product",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"update-product"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete product",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\":7\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8003/product/delete-product",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8003",
+											"path": [
+												"product",
+												"delete-product"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

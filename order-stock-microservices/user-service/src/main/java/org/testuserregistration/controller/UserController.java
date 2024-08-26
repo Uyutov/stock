@@ -1,11 +1,9 @@
 package org.testuserregistration.controller;
 
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.testuserregistration.dto.LoginDTO;
 import org.testuserregistration.dto.RefreshTokenDTO;
 import org.testuserregistration.dto.UserRegistrationDTO;
@@ -13,6 +11,7 @@ import org.testuserregistration.service.KeycloakUserRegistrationService;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class UserController {
     private final KeycloakUserRegistrationService keycloakUserRegistrationService;
 
@@ -26,12 +25,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AccessTokenResponse> login(@RequestBody LoginDTO loginDTO) {
+    public AccessTokenResponse login(@RequestBody LoginDTO loginDTO) {
         return keycloakUserRegistrationService.loginUser(loginDTO);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenResponse> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    public AccessTokenResponse refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
         return keycloakUserRegistrationService.refreshToken(refreshTokenDTO);
     }
 }
