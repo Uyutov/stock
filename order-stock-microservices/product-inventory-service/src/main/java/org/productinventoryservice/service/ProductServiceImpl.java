@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Boolean checkForProductAvailabilityAndSubtractThem(List<ProductSubtractionTransactionDTO> requestedProducts) {
         for (var request : requestedProducts) {
-            Optional<Product> product = productRepository.findById(request.productId());
+            Optional<Product> product = productRepository.findById(request.id());
             Integer requestedProductAmount = request.amount();
 
             if (product.isEmpty()) {

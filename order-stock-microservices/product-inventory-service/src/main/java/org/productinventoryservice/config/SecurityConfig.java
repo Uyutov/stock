@@ -3,6 +3,8 @@ package org.productinventoryservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.config.Customizer;
@@ -10,6 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,11 +28,15 @@ public class SecurityConfig {
             oauth2.jwt(Customizer.withDefaults());
         });
 
+        http.csrf(csrf -> csrf.disable());
+        /*http.cors(Customizer.withDefaults());
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));*/
+
         return http
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/product/**").hasRole("STOREKEEPER")
-                                    .requestMatchers("/warehouse/**").hasRole("STOREKEEPER")
-                                    .anyRequest().denyAll();
+                            .requestMatchers("/warehouse/**").hasRole("STOREKEEPER")
+                            .anyRequest().denyAll();
                 })
                 .build();
     }

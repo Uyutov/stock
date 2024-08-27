@@ -36,3 +36,7 @@ eureka:
 
 rabbitmq:
   exchange: productAvailability
+
+cors:
+  origins: "http://localhost:8002"
+  headers: "*"

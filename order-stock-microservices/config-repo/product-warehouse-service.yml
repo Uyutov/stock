@@ -31,3 +31,7 @@ rabbitmq:
   queue: check
   exchange: productAvailability
   routing-key: check
+
+cors:
+  origins: "http://localhost:8002"
+  headers: "*"

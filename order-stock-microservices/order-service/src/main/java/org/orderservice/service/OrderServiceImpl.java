@@ -2,9 +2,7 @@ package org.orderservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.orderservice.dto.order.OrderCreationDTO;
-import org.orderservice.dto.order.OrderRequestDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
-import org.orderservice.dto.order.OrderStatusChangeDTO;
 import org.orderservice.dto.user.UserDTO;
 import org.orderservice.entity.Order;
 import org.orderservice.entity.OrderProduct;
@@ -15,6 +13,7 @@ import org.orderservice.entity.enums.OrderState;
 import org.orderservice.exception.NotEnoughProductException;
 import org.orderservice.exception.WrongOrderStateException;
 import org.orderservice.mapper.OrderMapper;
+import org.orderservice.mapper.RoleToOrderStateMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
 import org.orderservice.repository.OrderRepository;
@@ -24,13 +23,14 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -43,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
+    private final RoleToOrderStateMapper roleToOrderStateMapper;
 
     private final RabbitTemplate rabbitTemplate;
     private final DirectExchange exchange;
@@ -58,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
                             UserDetailsService userService,
                             OrderMapper orderMapper,
                             UserMapper userMapper,
+                            RoleToOrderStateMapper roleToOrderStateMapper,
                             RabbitTemplate rabbitTemplate,
                             DirectExchange exchange) {
         this.orderRepository = orderRepository;
@@ -66,6 +68,7 @@ public class OrderServiceImpl implements OrderService {
         this.userService = userService;
         this.orderMapper = orderMapper;
         this.userMapper = userMapper;
+        this.roleToOrderStateMapper = roleToOrderStateMapper;
         this.rabbitTemplate = rabbitTemplate;
         this.exchange = exchange;
     }
@@ -92,13 +95,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDTO createOrder(OrderCreationDTO dto) {
-        Principal principal = (Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = principal.getName();
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = jwt.getClaimAsString("preferred_username");
         UserDTO userDTO = (UserDTO) userService.loadUserByUsername(username);
 
         User user = userMapper.getUserFromDTO(userDTO);
 
-        Boolean canCreateOrder = (Boolean) rabbitTemplate.convertSendAndReceive(exchange.getName(), dto.products());
+        Boolean canCreateOrder = (Boolean) rabbitTemplate.convertSendAndReceive(exchange.getName(), "check", dto.products());
 
         if(canCreateOrder) {
             Order newOrder = Order.builder()
@@ -135,7 +138,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO changeOrderStatus(Long id, OrderState state) {
+    public OrderResponseDTO changeOrderStatus(Long id) {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authorities = (List<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+        OrderState state = roleToOrderStateMapper.getOrderSateByRole(authorities);
+
         Order order = orderRepository.findById(id).orElseThrow(() -> {
                     return new EntityNotFoundException(String.format(ORDER_NOT_FOUND_EXC, id));
                 }

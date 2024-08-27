@@ -1,18 +1,5 @@
 spring:
   application:
-    name: product-inventory-service
-  datasource:
-    url: jdbc:postgresql://localhost:8844/keycloak_db
-    username: keycloak
-    password: password
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: validate
-server:
-  port: 8003
-
-rabbitmq:
-  queue: product.availability.request
-  exchange: product.availability
-  routing-key: product
+    name: product-warehouse-service
+  config:
+    import: optional:configserver:http://localhost:8000/

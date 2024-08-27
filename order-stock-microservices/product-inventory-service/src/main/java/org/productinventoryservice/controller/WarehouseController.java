@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/warehouse")
+@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
@@ -25,13 +26,13 @@ public class WarehouseController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<WarehouseDTO> createWarehouse(NewWarehouseDTO dto)
+    public ResponseEntity<WarehouseDTO> createWarehouse(@RequestBody NewWarehouseDTO dto)
     {
         return new ResponseEntity<>(warehouseService.createWarehouse(dto), HttpStatusCode.valueOf(201));
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<WarehouseDTO> updateWarehouse(WarehouseDTO dto)
+    public ResponseEntity<WarehouseDTO> updateWarehouse(@RequestBody WarehouseDTO dto)
     {
         return new ResponseEntity(warehouseService.updateWarehouse(dto), HttpStatusCode.valueOf(200));
     }

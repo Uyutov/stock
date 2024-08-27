@@ -11,7 +11,7 @@ import org.testuserregistration.dto.UserRegistrationDTO;
 public interface KeycloakUserRegistrationService {
     ResponseEntity createUser(UserRegistrationDTO user);
 
-    ResponseEntity<AccessTokenResponse> loginUser(LoginDTO loginDTO);
+    AccessTokenResponse loginUser(LoginDTO loginDTO);
 
-    ResponseEntity<AccessTokenResponse> refreshToken(RefreshTokenDTO refreshTokenDTO);
+    AccessTokenResponse refreshToken(RefreshTokenDTO refreshTokenDTO);
 }

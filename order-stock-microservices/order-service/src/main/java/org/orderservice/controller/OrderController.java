@@ -14,6 +14,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/order")
+@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class OrderController {
     private final OrderService orderService;
 
@@ -32,13 +33,13 @@ public class OrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<Object> createOrder(OrderCreationDTO dto)
+    public ResponseEntity<Object> createOrder(@RequestBody OrderCreationDTO dto)
     {
         return new ResponseEntity<>(orderService.createOrder(dto), HttpStatusCode.valueOf(201));
     }
 
     @PutMapping("/{id}/change-state")
     public ResponseEntity<OrderResponseDTO> packageOrder(@PathVariable("id") Long id){
-        return ResponseEntity.ok(orderService.changeOrderStatus(id, OrderState.DELIVERING));
+        return ResponseEntity.ok(orderService.changeOrderStatus(id));
     };
 }

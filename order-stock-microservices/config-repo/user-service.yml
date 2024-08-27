@@ -14,3 +14,7 @@ keycloak:
   adminClientId: "admin-cli"
   authClientId: "innowise-task3-auth"
   adminClientSecret: "qfPInrtMcYOWjLIWchXtBcXk4P0uRcCX"
+
+cors:
+  origins: "http://localhost:8002"
+  headers: "*"

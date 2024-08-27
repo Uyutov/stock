@@ -30,7 +30,6 @@ public class Product {
     @Min(value = 1, message = "Price should be positive")
     private Integer price;
 
-    @NotNull(message = "Warehouse should be specified")
     @OneToMany(mappedBy = "product")
     private List<WarehouseProduct> productAmount;
 }
