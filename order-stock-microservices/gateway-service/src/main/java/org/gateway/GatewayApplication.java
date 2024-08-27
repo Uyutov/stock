@@ -26,10 +26,10 @@ public class GatewayApplication {
                         .uri("lb://USER-SERVICE"))
                 .route("product", route -> route.path("/api/v1/product/**")
                         .filters(f -> f.stripPrefix(2))
-                        .uri("lb://PRODUCT-INVENTORY-SERVICE"))
+                        .uri("lb://PRODUCT-WAREHOUSE-SERVICE"))
                 .route("warehouse", route -> route.path("/api/v1/warehouse/**")
                         .filters(f -> f.stripPrefix(2))
-                        .uri("lb://PRODUCT-INVENTORY-SERVICE"))
+                        .uri("lb://PRODUCT-WAREHOUSE-SERVICE"))
                 .build();
     }
 

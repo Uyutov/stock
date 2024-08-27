@@ -11,7 +11,6 @@ import org.testuserregistration.service.KeycloakUserRegistrationService;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class UserController {
     private final KeycloakUserRegistrationService keycloakUserRegistrationService;
 

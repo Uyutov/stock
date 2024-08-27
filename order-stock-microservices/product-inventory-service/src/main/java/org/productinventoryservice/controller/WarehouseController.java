@@ -2,7 +2,6 @@ package org.productinventoryservice.controller;
 
 import org.productinventoryservice.dto.warehouse.NewWarehouseDTO;
 import org.productinventoryservice.dto.warehouse.WarehouseDTO;
-import org.productinventoryservice.dto.warehouse.WarehouseRequestDTO;
 import org.productinventoryservice.service.interfaces.WarehouseService;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/warehouse")
-@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
