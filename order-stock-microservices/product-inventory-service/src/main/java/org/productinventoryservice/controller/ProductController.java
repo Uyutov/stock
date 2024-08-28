@@ -1,8 +1,6 @@
 package org.productinventoryservice.controller;
 
-import org.apache.catalina.connector.Response;
 import org.productinventoryservice.dto.product.*;
-import org.productinventoryservice.entity.Product;
 import org.productinventoryservice.service.interfaces.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/product")
-@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class ProductController {
 
     private final ProductService productService;

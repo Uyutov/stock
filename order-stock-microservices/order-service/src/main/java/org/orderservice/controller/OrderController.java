@@ -2,7 +2,6 @@ package org.orderservice.controller;
 
 import org.orderservice.dto.order.OrderCreationDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
-import org.orderservice.entity.enums.OrderState;
 import org.orderservice.service.interfaces.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +9,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/order")
-@CrossOrigin(origins = "http://localhost:8002", allowedHeaders = "*")
 public class OrderController {
     private final OrderService orderService;
 

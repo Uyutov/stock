@@ -13,6 +13,8 @@ Create queue "check" and bind it to "productAvailability" exchange with routing 
 
 Services should be startet in this order: config-service -> discovery-service -> gateway-service -> the rest in any order (order-service, product-inventory-servise, user-service). 
 
+To use endpoints authorize with appropriate requests:
+
 All endpoins in user-service are acceseble by unauthorized requests.
 
 All endpoints in order-service are only acceseble by user authorized requests, except /order/change-state, it can be acccesed by packeger, delivery and pickup-manager.
