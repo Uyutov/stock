@@ -19,9 +19,9 @@ public class Warehouse {
     @SequenceGenerator(name = "warehouse_id_seq", schema = "order_stock", sequenceName = "warehouse_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
-    @NotBlank(message = "Please provide warehouse address")
+    @Column(nullable = false)
     private String address;
 
-    @NotBlank(message = "Please provide warehouse name")
+    @Column(nullable = false)
     private String name;
 }

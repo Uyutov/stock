@@ -23,10 +23,10 @@ public class Product {
     @SequenceGenerator(name = "product_id_seq", schema = "order_stock", sequenceName = "product_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
-    @NotBlank(message = "Please provide product name")
+    @Column(nullable = false)
     private String name;
 
-    @NotNull(message = "Price could not be null")
+    @Column(nullable = false)
     @Min(value = 1, message = "Price should be positive")
     private Integer price;
 

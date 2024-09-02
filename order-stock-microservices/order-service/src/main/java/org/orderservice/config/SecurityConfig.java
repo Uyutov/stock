@@ -36,8 +36,8 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/order/{id}/change-state").hasAnyRole("PACKER", "DELIVERY", "PICKUP_MANAGER")
-                            .requestMatchers("/order/**").hasRole("USER");
-                            //.anyRequest().denyAll();
+                            .requestMatchers("/order/**").hasRole("USER")
+                            .anyRequest().denyAll();
                 })
                 .build();
     }

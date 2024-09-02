@@ -30,12 +30,12 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private OrderState state;
-    @NotBlank(message = "Please provide delivery address for order")
+
+    @Column(nullable = false)
     private String deliveryAddress;
 
-    @NotNull(message = "User must be specified")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "order")

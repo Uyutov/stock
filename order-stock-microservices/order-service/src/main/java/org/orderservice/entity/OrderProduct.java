@@ -1,11 +1,6 @@
 package org.orderservice.entity;
 
-import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,19 +18,17 @@ public class OrderProduct {
     @NotNull(message = "OrderProduct embedded id must be specified")
     private OrderProductKey id;
 
-    @NotNull(message = "Amount could not be null")
+    @Column(nullable = false)
     @Min(value = 1, message = "Amount should be positive")
     private Integer amount;
 
     @ManyToOne
     @MapsId("orderId")
-    @NotNull(message = "Order must be specified")
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @ManyToOne
     @MapsId("productId")
-    @NotNull(message = "Product must be specified")
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }

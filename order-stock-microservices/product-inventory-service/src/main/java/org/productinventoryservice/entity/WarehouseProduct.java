@@ -22,17 +22,15 @@ public class WarehouseProduct {
 
     @ManyToOne
     @MapsId("warehouseId")
-    @JoinColumn(name = "warehouse_id")
-    @NotNull(message = "Warehouse must be specified")
+    @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
     @ManyToOne
     @MapsId("productId")
-    @JoinColumn(name = "product_id")
-    @NotNull(message = "Product must be specified")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @NotNull(message = "Amount cannot be null")
+    @Column(nullable = false)
     @Min(value = 0, message = "Amount should be positive")
     private Integer amount;
 
