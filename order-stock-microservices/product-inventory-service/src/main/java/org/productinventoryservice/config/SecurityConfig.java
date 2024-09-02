@@ -35,7 +35,9 @@ public class SecurityConfig {
 
         return http
                 .authorizeHttpRequests(request -> {
-                    request.requestMatchers("/product/**").hasRole("STOREKEEPER")
+                    request.requestMatchers("/product/{id}").hasRole("USER")
+                            .requestMatchers("/product/product-page").hasRole("USER")
+                            .requestMatchers("/product/**").hasRole("STOREKEEPER")
                             .requestMatchers("/warehouse/**").hasRole("STOREKEEPER")
                             .anyRequest().denyAll();
                 })
