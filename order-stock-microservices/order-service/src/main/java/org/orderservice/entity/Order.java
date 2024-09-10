@@ -39,6 +39,7 @@ public class Order {
     @NotNull(message = "Please provide order state")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "state", nullable = false)
     private OrderState state;
 
     @Column(nullable = false)
