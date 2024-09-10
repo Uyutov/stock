@@ -1,7 +1,10 @@
 package org.productinventoryservice.service.interfaces;
 
-import org.productinventoryservice.dto.product.*;
-import org.productinventoryservice.entity.Product;
+import org.productinventoryservice.dto.product.AddProductTransactionDTO;
+import org.productinventoryservice.dto.product.DeleteProductDTO;
+import org.productinventoryservice.dto.product.NewProductDTO;
+import org.productinventoryservice.dto.product.ProductDTO;
+import org.productinventoryservice.dto.product.ProductSubtractionTransactionDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

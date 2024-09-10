@@ -25,6 +25,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .state(order.getState().toString())
                 .deliveryAddress(order.getDeliveryAddress())
+                .totalPrice(order.getTotalPrice())
                 .products(orderedProducts)
                 .build();
     }

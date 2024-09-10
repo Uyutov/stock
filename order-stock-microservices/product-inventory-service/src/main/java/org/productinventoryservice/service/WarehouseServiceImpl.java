@@ -3,7 +3,6 @@ package org.productinventoryservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.productinventoryservice.dto.warehouse.NewWarehouseDTO;
 import org.productinventoryservice.dto.warehouse.WarehouseDTO;
-import org.productinventoryservice.dto.warehouse.WarehouseRequestDTO;
 import org.productinventoryservice.entity.Warehouse;
 import org.productinventoryservice.exception.RepeatedWarehouseCreationException;
 import org.productinventoryservice.mapper.WarehouseMapper;

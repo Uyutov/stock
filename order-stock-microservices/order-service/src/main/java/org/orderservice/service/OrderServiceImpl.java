@@ -1,6 +1,7 @@
 package org.orderservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.orderservice.dao.OrderDao;
 import org.orderservice.dto.order.OrderCreationDTO;
 import org.orderservice.dto.order.OrderResponseDTO;
 import org.orderservice.dto.user.UserDTO;
@@ -9,6 +10,7 @@ import org.orderservice.entity.OrderProduct;
 import org.orderservice.entity.Product;
 import org.orderservice.entity.User;
 import org.orderservice.entity.composite_key.OrderProductKey;
+import org.orderservice.entity.enums.FilterOptions;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.exception.NotEnoughProductException;
 import org.orderservice.exception.WrongOrderStateException;
@@ -30,7 +32,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -39,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final OrderDao orderDao;
     private final UserDetailsService userService;
 
     private final OrderMapper orderMapper;
@@ -53,9 +55,11 @@ public class OrderServiceImpl implements OrderService {
     private final String ORDER_NOT_FOUND_EXC = "Order with id %d not found";
     private final String NOT_ENOUGH_PRODUCT_EXC = "There is not enough of products to create order";
     private final String WRONG_ORDER_STATUS = "Wrong order status: %s";
+
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
                             OrderProductRepository orderProductRepository,
+                            OrderDao orderDao,
                             UserDetailsService userService,
                             OrderMapper orderMapper,
                             UserMapper userMapper,
@@ -65,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.orderProductRepository = orderProductRepository;
+        this.orderDao = orderDao;
         this.userService = userService;
         this.orderMapper = orderMapper;
         this.userMapper = userMapper;
@@ -84,11 +89,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponseDTO> getOrdersPage(Pageable pageable) {
+    public Page<OrderResponseDTO> getOrdersPage(Pageable pageable, FilterOptions filterOption, String filterValue) {
         Page<Order> orders = orderRepository.findAll(pageable);
         if (orders.getTotalElements() != 0) {
-            Page<OrderResponseDTO> orderResponsePage = orders.map(order -> orderMapper.getResponseDtoFromOrder(order));
-            return orderResponsePage;
+            if(filterOption == null)
+            {
+                return orders.map(order -> orderMapper.getResponseDtoFromOrder(order));
+            }
+            return orderRepository.findAll(orderDao.getOrdersPage(filterOption, filterValue), pageable)
+                    .map(order -> orderMapper.getResponseDtoFromOrder(order));
         }
         return Page.empty();
     }
@@ -103,11 +112,16 @@ public class OrderServiceImpl implements OrderService {
 
         Boolean canCreateOrder = (Boolean) rabbitTemplate.convertSendAndReceive(exchange.getName(), "check", dto.products());
 
-        if(canCreateOrder) {
+        if (canCreateOrder) {
+            Integer totalPrice = dto.products().stream().mapToInt(
+                            product -> product.amount() * productRepository.findById(product.id()).get().getPrice())
+                    .sum();
+
             Order newOrder = Order.builder()
                     .user(user)
                     .state(PACKAGING)
                     .deliveryAddress(dto.deliveryAddress())
+                    .totalPrice(totalPrice)
                     .build();
 
             Order order = orderRepository.save(newOrder);
@@ -132,14 +146,13 @@ public class OrderServiceImpl implements OrderService {
             OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(order);
 
             return response;
-        }else {
+        } else {
             throw new NotEnoughProductException(NOT_ENOUGH_PRODUCT_EXC);
         }
     }
 
     @Override
     public OrderResponseDTO changeOrderStatus(Long id) {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var authorities = (List<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
         OrderState state = roleToOrderStateMapper.getOrderSateByRole(authorities);
@@ -154,8 +167,7 @@ public class OrderServiceImpl implements OrderService {
             OrderResponseDTO response = orderMapper.getResponseDtoFromOrder(orderRepository.save(order));
 
             return response;
-        }catch (IllegalArgumentException exception)
-        {
+        } catch (IllegalArgumentException exception) {
             throw new WrongOrderStateException(String.format(WRONG_ORDER_STATUS, state));
         }
     }
