@@ -19,6 +19,7 @@ import org.orderservice.entity.User;
 import org.orderservice.entity.composite_key.OrderProductKey;
 import org.orderservice.entity.enums.OrderState;
 import org.orderservice.mapper.OrderMapper;
+import org.orderservice.mapper.RoleToOrderStateMapper;
 import org.orderservice.mapper.UserMapper;
 import org.orderservice.repository.OrderProductRepository;
 import org.orderservice.repository.OrderRepository;
@@ -32,10 +33,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +61,8 @@ class OrderServiceImplTest {
     private OrderMapper orderMapper;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private RoleToOrderStateMapper roleMapper;
 
     @Mock
     private RabbitTemplate rabbitTemplate;
@@ -146,8 +153,6 @@ class OrderServiceImplTest {
                 ))
                 .build();
 
-        exchange = new DirectExchange(exchangeName);
-
         Principal principal = () -> user.getUsername();
         Authentication auth = new UsernamePasswordAuthenticationToken(principal, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -174,7 +179,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.findAll(pageable)).thenReturn(ordersPage);
         Mockito.when(orderMapper.getResponseDtoFromOrder(order)).thenReturn(orderResponse);
 
-        Page<OrderResponseDTO> response = orderService.getOrdersPage(pageable);
+        Page<OrderResponseDTO> response = orderService.getOrdersPage(pageable, null, null);
 
         assertThat(response).isEqualTo(orderResponseDTOPage);
         assertThat(response.toList()).isEqualTo(List.of(orderResponse));
@@ -192,6 +197,16 @@ class OrderServiceImplTest {
         ProductTransactionDTO requestedApple = new ProductTransactionDTO(1L, 5);
         ProductTransactionDTO requestedBottle = new ProductTransactionDTO(2L, 10);
 
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Jwt jwt = Mockito.mock(Jwt.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(jwt);
+        Mockito.when(jwt.getClaimAsString("preferred_username")).thenReturn("Vladimir");
+
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
+
         OrderCreationDTO orderCreationDTO = new OrderCreationDTO(
                 "Golubeva",
                 List.of(requestedApple, requestedBottle)
@@ -201,6 +216,7 @@ class OrderServiceImplTest {
                 .user(user)
                 .deliveryAddress(orderCreationDTO.deliveryAddress())
                 .state(OrderState.PACKAGING)
+                .totalPrice(250)
                 .build();
 
         OrderProduct orderedApple = new OrderProduct(
@@ -229,7 +245,8 @@ class OrderServiceImplTest {
 
         Mockito.when(orderMapper.getResponseDtoFromOrder(order)).thenReturn(orderResponse);
 
-        Mockito.when(rabbitTemplate.convertSendAndReceive(exchange.getName(), orderCreationDTO.products())).thenReturn(true);
+        Mockito.when(exchange.getName()).thenReturn("name");
+        Mockito.when(rabbitTemplate.convertSendAndReceive("name", "check", orderCreationDTO.products())).thenReturn(true);
 
         OrderResponseDTO response = orderService.createOrder(orderCreationDTO);
 
@@ -242,6 +259,13 @@ class OrderServiceImplTest {
     void changeOrderStatus() {
         Long id = 1L;
         OrderState state = OrderState.DELIVERING;
+        var authority = new SimpleGrantedAuthority("PACKER");
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getAuthorities()).thenAnswer(unused -> Collections.singletonList(authority));
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
 
         Order orderWithNewState = Order.builder()
                 .id(order.getId())
@@ -261,10 +285,11 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.findById(id)).thenReturn(Optional.of(order));
         Mockito.when(orderRepository.save(orderWithNewState)).thenReturn(orderWithNewState);
         Mockito.when(orderMapper.getResponseDtoFromOrder(orderWithNewState)).thenReturn(orderResponseWithNewState);
+        Mockito.when(roleMapper.getOrderSateByRole(List.of(authority))).thenReturn(state);
 
         OrderResponseDTO response = orderService.changeOrderStatus(id);
 
         assertThat(response).isEqualTo(orderResponseWithNewState);
-        assertThat(response.state()).isEqualTo(OrderState.DELIVERING.toString());
+        assertThat(response.state()).isEqualTo(state.toString());
     }
 }

@@ -1,9 +1,11 @@
 package org.testuserregistration.controller;
 
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.testuserregistration.dto.LoginDTO;
 import org.testuserregistration.dto.RefreshTokenDTO;
 import org.testuserregistration.dto.UserRegistrationDTO;

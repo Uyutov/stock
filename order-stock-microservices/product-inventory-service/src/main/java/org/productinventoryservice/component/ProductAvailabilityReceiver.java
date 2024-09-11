@@ -2,10 +2,8 @@ package org.productinventoryservice.component;
 
 
 import org.productinventoryservice.dto.product.ProductSubtractionTransactionDTO;
-import org.productinventoryservice.service.ProductServiceImpl;
 import org.productinventoryservice.service.interfaces.ProductService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

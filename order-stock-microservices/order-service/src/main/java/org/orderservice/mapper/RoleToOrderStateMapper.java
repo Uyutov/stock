@@ -1,11 +1,9 @@
 package org.orderservice.mapper;
 
 import org.orderservice.entity.enums.OrderState;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component

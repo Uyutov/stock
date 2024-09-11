@@ -3,7 +3,11 @@ package org.productinventoryservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.productinventoryservice.dto.product.*;
+import org.productinventoryservice.dto.product.AddProductTransactionDTO;
+import org.productinventoryservice.dto.product.DeleteProductDTO;
+import org.productinventoryservice.dto.product.NewProductDTO;
+import org.productinventoryservice.dto.product.ProductDTO;
+import org.productinventoryservice.dto.product.ProductSubtractionTransactionDTO;
 import org.productinventoryservice.entity.Product;
 import org.productinventoryservice.entity.Warehouse;
 import org.productinventoryservice.entity.WarehouseProduct;

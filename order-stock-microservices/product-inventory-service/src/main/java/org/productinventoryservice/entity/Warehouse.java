@@ -1,7 +1,12 @@
 package org.productinventoryservice.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +24,9 @@ public class Warehouse {
     @SequenceGenerator(name = "warehouse_id_seq", schema = "order_stock", sequenceName = "warehouse_id_seq", allocationSize = 5, initialValue = 1)
     private Long id;
 
-    @NotBlank(message = "Please provide warehouse address")
+    @Column(nullable = false)
     private String address;
 
-    @NotBlank(message = "Please provide warehouse name")
+    @Column(nullable = false)
     private String name;
 }
